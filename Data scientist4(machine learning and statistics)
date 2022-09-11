@@ -1,0 +1,327 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
+'''6.6 LAB: Backward selection using ols()
+The forestfires.csv data base contains meteorological information and the area burned for 517 forest fires that occurred in Montesinho Natural Park in Portugal. The columns of interest are FFMC, DMC, DC, and ISI, as well as the response variable, area.
+
+Read in the file forestfires.csv.
+Use the ols() function to perform forward selection stepwise regression on the variables FFMC, DMC, DC, and ISI, in that order.
+Continue the stepwise regression until all the variables in the model have p-values less than 0.15.
+Ex: If the variable RH is used instead of FFMC, the output is:
+
+model1 p-values are  Intercept    1.684306e-64
+RH           3.486263e-01
+DMC          2.350870e-02
+DC           1.556796e-03
+ISI          6.984705e-01
+dtype: float64
+model2 p-value is  Intercept    3.247158e-76
+RH           3.108264e-01
+DMC          2.520680e-02
+DC           1.521100e-03
+dtype: float64
+model3 p-value is  Intercept    2.969390e-136
+DMC           1.642624e-02
+DC            9.065366e-04
+dtype: float64 '''
+
+# import the necessary modules
+import pandas as pd
+import statsmodels.formula.api as smf
+
+fires =pd.read_csv("forestfires.csv") # read in forestfires.csv
+
+# response variable
+Y = fires['area'] # set area as the response variable
+
+model1 = model1_1 = smf.ols('Y ~ FFMC + DMC + DC + ISI', data=fires).fit() # generate the multiple regression model for FFMC, DMC, DC, and ISI, in that order.
+# Prints the p-value
+print("model1 p-values are ", model1.pvalues)
+
+# second step of backward regression
+
+model2 = model2_1 = smf.ols('Y ~ FFMC + DMC + DC', data=fires).fit() # generate the MLR model using the order FFMC, DMC, DC, and ISI. Ex: if DMC is removed, use Y ~ FFMC + DC + ISI.
+print("model2 p-value is ", model2.pvalues)
+
+model3 = model3_1 = smf.ols('Y ~ DMC + DC', data=fires).fit() # Continue until no variables have p-value greater than 0.15
+print("model3 p-value is ", model3.pvalues)
+
+
+# In[ ]:
+
+
+'''7.6 LAB: Finding eigenvalues and eigenvectors with .corr() and eig()
+The forestfires.csv data base contains meteorological information and the area burned for 517 forest fires that occurred in Montesinho Natural Park in Portugal. The columns of interest are FFMC, DMC, DC, ISI, temp, RH, wind, and rain.
+
+Read in the file forestfires.csv.
+Create a new data frame X from the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order.
+Calculate the correlation matrix for the data in X.
+Calculate the eigenvalues and eigenvectors for the correlation matrix.
+Ex: If only the columns FFMC, DMC, DC, and ISI are used, the output is:
+
+[2.23867056 0.98913376 0.45934011 0.31285558] [[-0.49479654 -0.4452682  -0.7462607   0.00275454]
+ [-0.54446142  0.41127563  0.11293664 -0.72225995]
+ [-0.51357442  0.51447927  0.03607655  0.68574841]
+ [-0.44156478 -0.60654734  0.65501051  0.0899005 ]] '''
+
+# import the necessary modules
+import numpy as np
+import pandas as pd
+from numpy import linalg as LA
+
+fires = pd.read_csv("forestfires.csv") # read in forestfires.csv
+
+X = fires[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']] # create a new data frame with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order.
+
+X_corr = X.corr()# calculate the correlation matrix for the data in the data frame X
+
+w,v = LA.eig(np.array(X.corr())) # calculate the eigenvalues and eigenvectors of the matrix X_corr
+
+print(w, v)
+
+
+# In[ ]:
+
+
+'''7.7 LAB: PCA using .cov and eig()
+The forestfires.csv data base contains meteorological information and the area burned for 517 forest fires that occurred in Montesinho Natural Park in Portugal. The columns of interest are FFMC, DMC, DC, ISI, temp, RH, wind, and rain.
+
+Read in the file forestfires.csv.
+Create a new data frame X from the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order.
+Calculate the covariance matrix for the data in X.
+Calculate the eigenvalues and eigenvectors for the covariance matrix.
+Calculate the amount of variance contained in the first component.
+Ex: If only the columns FFMC, DMC, DC, and ISI are used, the output is:
+
+[6.35187225e+04 2.12678877e+03 1.13496502e+01 3.31868702e+01] [[ 0.00739596 -0.02478582 -0.58503337  0.81059664]
+ [ 0.17946956 -0.98322216 -0.0012556  -0.03260793]
+ [ 0.98372646  0.17964916  0.00110826 -0.00268257]
+ [ 0.00426876 -0.01964736  0.81100749  0.58469018]]
+0.9669459017392729  '''
+
+# import the necessary modules
+import numpy as np
+import pandas as pd
+from numpy import linalg as LA
+from sklearn.decomposition import PCA
+
+fires =pd.read_csv('forestfires.csv') # read in forestfires.csv
+
+X = fires[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']]# create a new dataframe with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order
+
+X_cov = X.cov() # calculate the covariance matrix
+
+w,v = LA.eig(X_cov) # calculate the eigenvalues and eigenvectors of matrix X_cov
+
+pca = PCA(n_components=8)
+pca.fit_transform(X)
+var = pca.explained_variance_ratio_[0]# calculate the percentage of the variance contained in the first principle component
+
+print(w, v)
+print(var)
+
+
+# In[ ]:
+
+
+'''8.5 LAB: Reading time series data
+Write a program that does the following:
+
+Load the births.csv dataset.
+Print the first 5 rows of the data set.
+The output should be:
+
+        Date  Births
+0 1959-01-01      35
+1 1959-01-02      32
+2 1959-01-03      30
+3 1959-01-04      31
+4 1959-01-05      44  '''
+
+# load the pandas and datetime modules
+import pandas as pd
+import datetime
+
+dateparse = lambda date:datetime.strptime(date, '%Y/%m/%d')# lambda function that converts a string into datetime
+
+births = pd.read_csv('births.csv', parse_dates=['Date']) # load the births dataset as a time series
+
+print(births.head())# print the first 5 lines of the dataset
+
+
+# In[ ]:
+
+
+'''8.6 LAB: Moving average
+Write a program that outputs the 4-MA series for the Expense column of the Heating.csv dataset.
+
+The output should be:
+
+0        NaN
+1        NaN
+2        NaN
+3     119.00
+4     120.50
+5     120.75
+6     121.00
+7     123.50
+8     124.75
+9     124.75
+10    124.75
+11    122.75
+12    120.25
+Name: Expense, dtype: float64 '''
+
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+ts = pd.read_csv('Heating.csv')# load the Heating.csv dataset 
+
+expense =  ts['Expense']# load the Expense column as a pandas Series
+
+mov_ave = expense.rolling(window=4).mean()# create the 4-MA series
+
+print(mov_ave)
+
+
+# In[ ]:
+
+
+'''9.6 LAB: Generating random numbers
+Write a program that would generate 500 data points and create a linear regression model using the scipy.stats module.
+
+Generate a numpy array, x, of 500 numbers evenly spaced between 0 and 100.
+Generate another numpy array, noise, of 500 numbers from the normal distribution with a mean of 0 and standard deviation of 1.
+Let y be the sum of the x and noise.
+Create a linear regression model using x as the predictor variable and y as the response variable.
+If the input is:
+
+123
+
+Then the output is:
+
+LinregressResult(slope=0.9992310659831275, intercept=-0.0001972726695882443, rvalue=0.9993984742634541, pvalue=0.0, stderr=0.001553779399848215, intercept_stderr=0.08975242785858578)
+'''
+
+import numpy as np
+import scipy.stats as st
+
+# set seed to input
+num = int(input())
+np.random.seed(num)
+
+x = np.linspace(0,100,500)# randomly generate 500 numbers between 0 and 100 using the linspace function
+noise = np.random.normal(0,1,500) # randomly generate 500 numbers from the normal distribution with mean = 0 and sd = 1
+
+y = x+noise # sum of x and noise
+
+model = st.linregress(x,y) # create a linear regression model using scipy.stats
+
+print(model)
+
+
+# In[ ]:
+
+
+'''9.7 LAB: Buffon's needle
+Write a computer program that finds an approximation for pi using the Buffon's needle simulation as described in the animation and participation activity. The program should take in an input value for the seed and output the approximation for pi.
+
+If the input for the seed is:
+
+123
+Then the output should be:
+
+3.178134 '''
+
+# import the math and random modules
+import numpy as np
+import random
+from math import sin,radians
+
+# sets seed to input
+num = int(input())
+random.seed(num)
+
+hits = 0
+
+for i in range(10000):
+    theta = random.randint(0,180) # randomly generate an angle from 0 to 180 degrees
+    D =random.uniform(0,0.5) # randomly generate a number from 0 to 0.5
+    if D<(sin(radians(theta))*0.5): # write condition for the needle hitting the line before the :
+        hits += 1
+p=(hits/10000)
+approximation =(2/p)# write formula for the approximation of pi
+
+print(f'{approximation:.6f}')
+
+
+# In[ ]:
+
+
+'''10.6 LAB: Wilcoxon rank-sum test using mannwhitneyu()
+The file cu_vs_pc.csv is a compilation of data from the Consumer Price Index and the Producer Price Index for several years.
+
+Read the file cu_vs_pc.csv into a data frame.
+Assign the columns cu_value and pc_value to the variables consumer and producer, respectively.
+Perform a two-sided Mann-Whitney U test on consumer and producer.
+Print the test statistic W and the p-value.
+Ex: If the parameter "alternative" is set to 'greater' rather than 'two-sided', the output is:
+
+W = 4.404000E+04
+p-value = 1.768100E-19 '''
+
+# import the necessary 
+import pandas as pd 
+import numpy as np
+from scipy import stats
+
+price = pd.read_csv("pc_vs_cu.csv")# read in pc_vs_cu.csv
+
+consumer = price["cu_value"]# assign the column cu_value
+producer = price["pc_value"]# assign the column pc_value
+
+W, p =stats.mannwhitneyu(consumer, producer, alternative = 'two-sided') # perform a two-sided Mann-Whitney U test on the variables consumer and producer
+
+print(f'W = {W:.6E}')
+print(f'p-value = {p:.6E}')
+
+
+# In[ ]:
+
+
+'''10.7 LAB: Kruskal-Wallis test using kruskal()
+The purpose.csv file contains data on the number of visitors to Taiwan classified by purpose of the visit. The columns of interest are Business, Pleasure, and Visit_Relatives.
+
+Read the file purpose.csv into a data frame.
+Assign the columns Business, Pleasure, and Visit_Relatives to the variables x, y, and z.
+Use kruskal() to perform a Kruskal-Wallis test on the variables x, y, and z.
+Print test statistic and p-value.
+Ex: If the column Conference is used instead of Visit_Relatives, the output is:
+
+H = 2.778622E+03
+p-value = 0.000000E+00 '''
+
+# import the necessary modules
+import numpy as np
+from scipy import stats
+import pandas as pd
+
+purpose = pd.read_csv("purpose.csv")# read in purpose.csv
+#print(purpose.head(0))
+x = purpose["Business"]# assign the column Business
+y = purpose["Pleasure"]# assign the column Pleasure
+z = purpose["Visit_Relatives"]# assign the column Visit_Relatives
+
+H, p =stats.kruskal(x, y, z) # perform Kruskal-Wallis test on x, y, and z
+print(f'H = {H:.6E}')
+print(f'p-value = {p:.6E}')
+
+
+# In[ ]:
+
+
+
+
