@@ -1,0 +1,22 @@
+''''1.7 LAB: Creating correlation matrices
+The kc_house_data dataset contains information on house sale prices in King County, Washington from May 2014 and May 2015. The columns include sale price, number of bedrooms, and square footage of living space.
+
+Load the data set into a data frame.
+Find the correlation matrix for the price, bedrooms, and sqft_living columns, in that order.
+Ex: If the number of bathrooms and square footage of the lot, bathrooms and sqft_lot, are used instead of bedrooms and sqft_living, the output is:
+
+              price  bathrooms  sqft_lot
+price      1.000000   0.525138  0.089661
+bathrooms  0.525138   1.000000  0.087740
+sqft_lot   0.089661   0.087740  1.000000 '''
+
+# Import the necessary modules
+import pandas as pd 
+
+
+house = pd.read_csv("kc_house_data.csv")# Code to read in kc_house_data.csv
+
+# Display the correlation matrix for the columns price, bedrooms, and sqft_living, in that order
+print(house[['price','bedrooms','sqft_living']].corr())# Code to calculate correlation matrix
+
+
