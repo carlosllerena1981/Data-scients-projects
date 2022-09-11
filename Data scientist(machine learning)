@@ -1,0 +1,614 @@
+'''
+1.10 LAB: Importing modules
+Import the numpy and scipy modules with the aliases used in this material. 
+These modules will be used with user input integers to create arrays and perform a linear regression. 
+Linear regression will be covered in a different chapter.
+
+Ex: When the input is:
+1
+6
+12
+15
+
+The output is:
+
+LinregressResult(slope=1.3846153846153846, intercept=-1.2692307692307683, 
+rvalue=0.8207293546575958, pvalue=0.17927064534240414, stderr=0.6815401979488211, intercept_stderr=6.866327235439774)
+'''
+# add code to import numpy and scipy
+import numpy as np
+from scipy import stats as st
+x1 = int(input())
+x2 = int(input())
+x3 = int(input())
+x4 = int(input())
+
+x = np.array([x1, x2, x3, x4])
+y = np.array([0, 10, 7, 25])
+
+print(st.linregress(x,y))
+
+'''
+1.11 LAB: Data frames
+The Cars dataset has three columns giving the quality, machining angle, and machining speed of 18 cars.
+
+Write a program that performs the following tasks:
+
+Load the data Cars.csv into a data frame called cars_df.
+
+Subset the first userNum rows of the data frame into a new data frame.
+
+Find and print the maximum values of each column in the subset.
+
+Ex: If the input is:
+5
+the output is:
+
+Quality    5
+Speed      4
+Angle      3
+dtype: int64 '''
+import pandas as pd
+
+
+cars_df = pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\Cars.csv') 
+
+userNum = int(input())
+df1=cars_df[0:userNum]
+
+print(df1.max())
+'''
+1.12 LAB: Subsetting data frames
+Data frames can be subset by a chosen value using ==.
+
+Ex: df[df.x == 5] gives all the rows in the data frame df for which the column x has a value of 5.
+
+Write a program that performs the following tasks:
+
+Load the file mtcars.csv into a data frame called df
+
+Create a new data frame df_cyl by subsetting the data frame based on a user defined value for the column cyl.
+
+Print the shape of the new data frame.
+
+Ex: If the input is:
+4
+the output is:
+
+(11, 12) '''
+import pandas as pd
+
+cylinders = int(input())
+
+df = pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\mtcars.csv') # read in the csv file mtcars.csv
+
+ # create a new dataframe with only the rows where cyl = cylinders
+
+print(df[df.cyl==cylinders].shape)
+'''
+1.13 LAB: Bar charts
+Write a program that performs the following tasks:
+
+Load the pandas module.
+Load the dataset in titanic.csv as titanic.
+Create a new data frame, first_south, by subsetting titanic to include instances where a passenger is in the first class cabin
+(pclass column is 1) and boarded from Southampton (embarked column is S).
+Create a new data frame, second_third, by subsetting titanic to include instances where a passenger is either in the second
+(pclass column is 2) or third class (pclass column is 3) cabin.
+'''
+# load the pandas module as pd
+import pandas as pd
+#import matplotlib.pyplot as plt
+
+titanic = pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\titanic\test.csv') # load titanic.csv
+first_south =titanic[(titanic['Pclass'] == 1) & (titanic['Embarked'] =='S')]
+print(first_south.head())
+second_third =titanic[(titanic['Pclass'] == 2) | (titanic['Pclass'] == 3)]
+print(second_third.head())
+'''
+1.14 LAB: Line charts
+Write a program that subsets the loads and subsets the stock market data in target.csv.
+
+Load the the data from target.csv as target.
+Create a new data frame, tgt_march, by subsetting the last 19 days of the target data frame.
+Create a new data frame, tgt_vol, by subsetting the Date and Volume columns.
+Create a new data frame, tgt_close, by subsetting the Date and Close columns.
+Using the template from this link, create separate line charts for Volume and Close and upload the resulting output.
+If the input is:
+
+3
+The output is:
+
+The volume of TGT on 2018-03-05 is 7654766.
+The closing stock price of TGT on 2018-03-05 is $75.14.
+'''
+
+# import the pandas module
+import pandas as pd
+
+tgt =pd.read_csv("target.csv") # load the target.csv file
+
+tgt_march = tgt[-19:] # subset the last 19 days of the dataframe
+
+tgt_vol = tgt_march[["Date","Volume"]] # subset tgt_march and create a data frame that contains the columns: Date and Volume
+
+tgt_close =tgt_march[["Date","Close"]] # subset tgt_march and create a data frame that contains the columns: Date and Closing
+
+day = int(input()) - 1
+
+volume_row =tgt_vol.iloc[[day]] # subset the specific row of tgt_vol for the given day
+volume = volume_row.iloc[0][1] # gets the volume for the given day
+
+close_row =tgt_close.iloc[[day]] # subset the specific row of tgt_close for the given day
+close = close_row.iloc[0][1] # gets the closing stock price for the given day
+
+date = tgt_march.iloc[[day]].iloc[0][0] # gets the date
+
+print("The volume of TGT on " + str(date) + " is " + str(int(volume)) + ".")
+print("The closing stock price of TGT on " + str(date) + " is $" + str(close) + ".")
+
+'''1.15 LAB: Strip plots
+Write a program that loads and subsets the dataset in titanic.csv.
+
+Load the pandas module.
+Load the dataset in titanic.csv as titanic.
+Create a new data frame, df, by subsetting the titanic data frame to include instances with male first class passengers who are over 18 years old.
+Using the template from this link, create and upload a strip plot where the data is grouped by the city the passengers embarked and by survival status.
+The output should be:
+
+    survived  pclass   sex   age  ...  deck  embark_town  alive  alone
+6          0       1  male  54.0  ...     E  Southampton     no   True
+23         1       1  male  28.0  ...     A  Southampton    yes   True
+27         0       1  male  19.0  ...     C  Southampton     no  False
+30         0       1  male  40.0  ...   NaN    Cherbourg     no   True
+34         0       1  male  28.0  ...   NaN    Cherbourg     no  False
+
+[5 rows x 15 columns]'''
+
+import pandas as pd # load pandas module as pd
+
+titanic = pd.read_csv('titanic.csv')# load the titanic.csv dataset
+
+df = titanic[(titanic['sex'] == 'male') & (titanic['pclass'] == 1) & (titanic['age'] > 18)]# subset titanic to include male passengers in first class over 18 years old
+
+print(df.head())
+'''
+2.6 LAB: Measures of center
+Given main.py, complete the program that performs the following tasks:
+
+Import the csv file mtcars.csv as a data frame using a pandas module function.
+
+Find the mean, median, and mode of the column wt.
+
+Print the mean, median, and mode
+
+Ex: for the column qsec, the output would be:
+
+mean = 17.84875, median = 17.710, mode = 0    17.02
+1    18.90
+Name: qsec, dtype: float64 '''
+import pandas as pd
+
+df = pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\mtcars.csv') # import dataset
+
+mean=df['wt'].mean() # calculating mean
+
+median=df['wt'].median() # calculation median
+
+mode=df['wt'].mode() # calculating mode
+
+print("mean = {:.5f}, median = {:.3f}, mode = {}".format(mean, median, mode))
+'''
+2.7 LAB: Standard deviation
+
+Descriptive statistics are important in sports. Data often involves a large number of measurements and players.
+
+The NBA2019 dataset was taken from nbastuffer and includes information on several players such as team name, age, turnover percentage, and points per game.
+
+Write a program to find the sample standard deviation, rounded to two decimal places, for all players on the list in a chosen column.
+
+Ex: If the input is:
+
+PointsPerGame
+Then the output is:
+
+The standard deviation for PointsPerGame is: 2.77 '''
+
+import pandas as pd
+import scipy.stats as st
+# Also import the scipy.stats module.
+
+NBA2019_df = pd.read_excel(r'C:\Users\Carlos\Desktop\data sets\2019NBA.xlsx', engine="openpyxl")
+                         
+
+# Input desired column. Ex: AGE, 2P%, or PointsPerGame.
+chosen_column = input()
+
+# Create subset of NBA2019_df based on input.
+NBA2019_df_column =NBA2019_df[chosen_column] 
+
+# Find standard deviation and round to two decimal places. 
+sample_s = st.tstd(NBA2019_df_column)
+sample_s_rounded = round(sample_s,2) #The student has incorrectly used the round() function.
+
+# Output
+print('The standard deviation for '+chosen_column+' is: {:.2f}'.format(sample_s_rounded))
+'''
+2.8 LAB: Five number summary
+Write a program that will do the following tasks:
+
+Load the file internetusage.csv into a data frame called df.
+Create a new data frame, internet, by subsetting the internet_usage column.
+Print the five number summary for the internet data frame.
+The output should be:
+
+       internet_usage
+count       51.000000
+mean        73.747059
+std          6.304422
+min         56.600000
+25%         69.500000
+50%         75.000000
+75%         77.600000
+max         84.700000
+'''
+import pandas as pd
+
+df = pd.read_csv(r"C:\Users\Carlos\Desktop\data sets\internetusage.csv")
+
+internet =df[['internet_usage']] # subset the column internet_usage
+
+five_num = internet.describe() # find the five number summary
+
+print(five_num)
+'''
+2.9 LAB: Box plots
+Write a program that will do the following tasks:
+
+Load the file internetusage.csv into a data frame called df.
+Create a new data frame, population, by subsetting the State and Population columns.
+Create a new data frame, state_data, by subsetting the inputted row.
+Using the template from this link, create a box plot for the population data frame.
+The input for the state of Colorado is:
+5
+The output should be:
+
+The population of Colorado is 5047692.
+'''
+# import the pandas module as pd
+import pandas as pd
+df = pd.read_csv('internetusage.csv') 
+
+population =  pd.DataFrame({'State':df['State'], 'Population':df['Population']}) # subset the State and Population columns
+
+state_index = int(input())
+
+state_data = population.iloc[state_index] # subset the row given by state_index
+
+state_name = state_data.iloc[0]
+
+state_pop = state_data.iloc[1]
+
+print("The population of " + str(state_name) + " is " + str(state_pop)+ ".")
+'''
+4.11 LAB: Poisson distribution
+Generate a Poisson distribution r1 of 8 numbers with a user input mean, lam.
+Generate a Poisson distribution r2 of 20 numbers with a mean of lam.
+Generate a Poisson distribution r3 of 100 numbers with a mean of lam.
+Find the cumulative probability of user defined integer x or fewer successes for a Poisson distribution with a mean of lam
+Find the theoretical mean of the generated Poisson distributions
+Calculate the actual means of r1, r2, and r3
+Ex: When the input is:
+
+2
+5
+the output is:
+
+Cumulative probability is 0.124652
+Theoretical mean is  5.0
+Mean of r1 is 6.000000
+Mean of r2 is 5.350000
+Mean of r3 is 5.130000
+'''
+import numpy as np
+# import the correct module and function
+
+x = int(input())
+lam = int(input())
+
+np.random.seed(seed=123)
+
+# Generate 8 random numbers with a Poisson distribution with a mean of lam
+r1 = np.random.poisson(lam = lam, size = 8)
+
+# Generate 20 random numbers with a Poisson distribution with a mean of lam
+r2 = np.random.poisson(lam = lam, size = 20)
+
+# Generate 100 random numbers with a Poisson distribution with a mean of lam
+r3 = np.random.poisson(lam = lam, size = 100)
+
+# Calculate the cumulative probability of x or fewer successes for a Poisson distribution with a mean of lam
+cp = np.sum(np.exp(-lam)*
+((lam**np.arange(x+1))/np.cumprod(np.concatenate((np.array([1]),np.arange(1,x+1)), axis=None))))
+print(f'Cumulative probability is {cp:.6f}')
+
+# Calculate the theoretical mean of the Poisson distribution
+mean_theor = float(lam)
+print("Theoretical mean is", mean_theor)
+
+# Calculate the actual mean of r1, r2, and r3
+mean_r1 = np.mean(r1)
+print(f'Mean of r1 is {mean_r1:.6f}')
+
+mean_r2 = np.mean(r2)
+print(f'Mean of r2 is {mean_r2:.6f}')
+
+mean_r3 = np.mean(r3)
+print(f'Mean of r3 is {mean_r3:.6f}')
+'''
+4.12 LAB: Normal distribution
+The normalized distribution for a person's intelligence quotient (IQ) has a mean of 100 and a standard deviation of 15. Write a program that takes two values for IQ (IQ1 and IQ2) as inputs and calculates the following probabilities for a randomly selected person having an IQ:
+
+greater than or equal to IQ1
+less than or equal to IQ1
+between IQ1 and IQ2
+For example, if the input is:
+
+100
+105
+the output is:
+
+The probability that a randomly selected person 
+ has an IQ of at least 100.0 is 0.500000.
+The probability that a randomly selected person 
+ has an IQ of at least 100.0 is 0.500000.
+The probability that a randomly selected person 
+ has an IQ of between 100.0 and 105.0 is 0.130559.
+ '''
+# import scipy.stats
+import scipy.stats as st
+
+# input two IQs, making sure that IQ1 is less than IQ2
+IQ1 = float(input())
+IQ2 = float(input())
+
+while IQ1 > IQ2:
+    print("IQ1 should be less than IQ2. Enter numbers again.")
+    IQ1 = float(input())
+    IQ2 = float(input())
+
+prob_al = 1- st.norm(100,15).cdf(IQ1)
+          
+prob_am = st.norm(100,15).cdf(IQ1)
+
+prob_bet = st.norm(100,15).cdf(IQ2)- st.norm(100,15).cdf(IQ1)
+
+print(f'The probability that a randomly selected person \n has an IQ of at least {IQ1} is {prob_al:.6f}.')
+print(f'The probability that a randomly selected person \n has an IQ of at least {IQ1} is {prob_am:.6f}.')
+print(f'The probability that a randomly selected person \n has an IQ of between {IQ1} and {IQ2} is {prob_bet:.6f}.')
+
+'''4.13 LAB: Student's t-distribution
+The United States Census Bureau determined that the mean number of children in an American household is 1.86. Suppose 50 households are polled and the sample mean is found to be 2.1 and the standard deviation is found to be 1.57.
+
+Write a program that finds the probability that another 50 household sample will have a sample mean of at least 2.1.
+
+The output should be:
+
+The probability that another 50 household sample will have a sample mean of at least 2.1 is 0.142510.'''
+
+import scipy.stats as st
+import math
+# the math package is necessary because the expression for t uses the math.sqrt(x) function.
+
+n = 50 
+pop_mean = 1.86 # what is the population mean?
+sam_mean = 2.1 # what is the sample mean?
+sd = 1.57 # what is the standard deviation?
+df = 49 # what is the degrees of freedom?
+
+t = (sam_mean-pop_mean)/(sd/math.sqrt(n)) # write an expression to find the value of t. 
+
+prob = st.t.sf(t,df)# use the st.t.sf function to find the probability
+
+print(f'The probability that another 50 household sample will have a sample mean of at least 2.1 is {prob:.6f}.')
+
+
+'''
+4.14 LAB: Binomial distribution
+Given a fair coin flipped 100 times, find the probability of a user-defined number of flips coming up heads.
+Find the mean and variance of the binomial distribution.
+Ex: When the input is:
+
+27
+the output is:
+
+1.512525E-06
+50.00
+25.00
+'''
+# Load the necessary module
+import math
+# Get user-defined number of successes
+k = int(input())
+
+# Set the number of trials and the probability of success in each trial
+
+# Calculate the probability of k successes given the defined n and p
+P =(math.factorial(100))/(math.factorial(k)*math.factorial(100-k))/(pow(2,100)) # Code to calculate probability
+print(f'{P:.6E}')
+
+# Return the mean of the distribution
+mean  = 100*(1/2) # Code to find mean
+print(f'{mean:.2f}')
+
+# Return the variance of the distribution 
+var = 100*(1/4) # Code to find variance
+print(f'{var:.2f}')
+'''
+5.10 LAB: Confidence intervals for population means
+norm.rsv is used to generate 100 random values with a normal distribution with a user defined mean and standard deviation.
+Calculate the sample mean of the distribution.
+Calculate the standard error of the distribution.
+Calculate the 95% confidence interval for a normal distribution with the sample mean and standard error.
+Determine if the user defined mean falls within the confidence interval.
+Ex: When the input is:
+
+0
+5
+the output is:
+
+Sample mean is 0.135545
+(-0.970110, 1.241201)
+User defined mean, 0 , is within the 95% confidence interval
+'''
+# import the necessary modules
+import numpy as np
+import scipy.stats as st
+
+# Get user defined mean and standard deviation
+mean_def = int(input())
+sd_def = int(input())
+
+np.random.seed(seed=123)
+
+# Generate 100 random numbers with a normal distribution with a mean of mean_def and a standard deviation of sd_def
+r = st.norm.rvs(mean_def, sd_def, size=100)
+
+# Calculate the sample mean of r
+mean = np.mean(r) # Code for calculating mean
+print(f'Sample mean is {mean:.6f}')
+
+# Calculate the standard error of r
+std_dev = np.std(r)  # Code for calculating standard deviation of r
+stderr = std_dev/np.sqrt(100)  # Code for calculating standard error
+
+# Calculate the 95% confidence interval using the sample mean and standard error
+int1 = mean- st.norm.ppf(0.975)*stderr, mean + st.norm.ppf(0.975)*stderr# Code for confidence interval
+print(f'({int1[0]:.6f}, {int1[1]:.6f})')
+
+# Determine if the user defined mean falls within the 95% confidence interval
+if int1[0] <= mean or int1[1]>=mean: # Finish the if statement
+    print("User defined mean,", mean_def,", is within the 95% confidence interval")
+else:
+   print("User defined mean,", mean_def,", is not within the 95% confidence interval")
+'''
+5.11 LAB: Confidence intervals for population proportions
+Load the titanic dataset.
+Find the proportion of passengers who embarked from Southampton whose age is greater than the user defined age.
+Calculate the 95% confidence interval for the sample proportion.
+Find proportion of all passengers whose age is greater than the user defined age.
+Report whether the actual proportion is within the sample confidence interval.
+When the input is:
+
+50
+the output is:
+
+Sample proportion is 0.069876
+(0.050186, 0.089565)
+Actual proportion, 0.071829, is within the 95% confidence interval
+'''
+# Import necessary modules
+import pandas as pd
+import scipy.stats as st
+import math
+age = int(input())
+
+# Read csv file titanic.csv into data frame
+titanic = pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\titanic\test.csv')
+# Take the subset of the data where Embarked = "S"
+south = titanic[titanic.Embarked == "S"]# Code to take subset
+# Determine the number of students with a gpa higher than cutoff
+
+# Find total number in subset
+n1 = titanic.Survived.sum()==1# Code to count number in subset
+
+# Find number in subset where Age > age
+x1 =sum(titanic['Age']>age) # Code to count number where Age > age
+
+# Calculate proportion
+p1 = x1 / n1*1.0 # Code to calculate proportion 
+print(f'Sample proportion is {p1:.6f}')
+
+# Calculate standard error
+stderr = (p1 * (1 - p1)/n1)**0.5  # Code to calculate standard error
+
+# Find 95% confidence interval
+
+conf_int = st.norm.interval(0.95,stderr,p1 )# Code to find confidence interval
+print(f'({conf_int[0]:.6f}, {conf_int[1]:.6f})')
+
+# Find proportion for full data
+n2 = titanic.Survived.sum()==1 # Code to count number in data set
+x2 = sum(titanic['Age']>age)# Code to count number in full data set where Age > age
+p2 =  x2 / n2*1.0 # Code to calculate proportion
+
+# Determine if the actual proportion falls within the 95% confidence interval
+if conf_int[0] <= p2 <= conf_int[1]:
+    print(f'Actual proportion, {p2:.6f}, is within the 95% confidence interval')
+else:
+    print(f'Actual proportion, {p2:.6f}, is not within the 95% confidence interval')
+'''
+5.12 LAB: One-sample hypothesis test for population proportion
+Load the gpa.csv data set.
+Find the number of students with a gpa greater than the user input value.
+Find the total number of students.
+Perform a z-test for the user input expected proportion.
+Determine if the hypothesis that the actual proportion is different from the expected proportion should be rejected at the alpha = 0.01 significance level.
+Ex: When the input is:
+
+0.5
+3.0
+the ouput is:
+
+(-1.690999E-01, 8.657181E-01)
+The two-tailed p-value, 8.657181E-01, is greater than than α. Thus, insufficient evidence exists to support the hypothesis that the proportion is different from 0.5
+'''
+# Import the correct modules
+import pandas as pd
+import numpy as np
+from statsmodels.stats.proportion import proportions_ztest
+# Read in gpa.csv
+gpa = pd.read_csv("gpa.csv") # Code to read in data set
+
+value = float(input())
+cutoff = float(input())
+
+# Determine the number of students with a gpa higher than cutoff
+counts = sum(gpa['gpa']>cutoff) # Code to count number of students with gpa > cutoff
+
+# Determine the total number of students
+nobs = gpa.gpa.count()# Code to count total number of students
+
+# Perform z-test for counts, nobs, and value
+ztest = proportions_ztest(counts,nobs,value= value) # Code to perform z-test
+print(f'({ztest[0]:.6E}, {ztest[1]:.6E})')
+
+# Determine the correct conclusion
+if  ztest[1]< 0.01:     # Finish the if statment
+    print(f'The two-tailed p-value, {ztest[1]:.6E}, is less than \u03B1. Thus, sufficient evidence exists to support the hypothesis that the proportion is different from {value}')
+else:
+    print(f'The two-tailed p-value, {ztest[1]:.6E}, is greater than than \u03B1. Thus, insufficient evidence exists to support the hypothesis that the proportion is different from {value}')
+
+'''5.13 LAB: Two-sample t-test
+Use the titanic.csv data set.
+Subset the data set into male and female.
+Choose the correct t-test to use to determine if male and female passengers paid the same mean fare.
+Ex: If the column SibSp is used instead of Fare, the output is:
+
+Ttest_indResult(statistic=-3.440523E+00, pvalue=6.076215E-04)
+'''
+# Import the necessary modules
+import pandas as pd
+import scipy.stats as st
+# Read in the titanic.csv data set
+titanic =pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\titanic\test.csv') # Code to read in data
+
+# Subset the data into male and female
+
+male =  titanic['Fare'][titanic['Sex'] == 'male']  # Code to subset on Sex = "male"
+female = titanic['Fare'][titanic['Sex'] == 'female'] # Code to subset on Sex = "female"
+
+# Use the correct t-test to compare values of Fare for both subsets
+t_test_results =st.ttest_ind(male,female) # Code to perform t-test
+print(f'Ttest_indResult(statistic={t_test_results[0]:.6E}, pvalue={t_test_results[1]:.6E})')
+
