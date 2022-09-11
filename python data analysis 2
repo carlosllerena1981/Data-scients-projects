@@ -1,0 +1,192 @@
+import pandas
+# diferent between loc and iloc
+data = {'one': pandas.Series([1,2,3], index=['a','b','c']),
+       'two': pandas.Series([1,2,3,4], index=['a','b','c','d'])}
+df=pandas.DataFrame(data)
+df
+# add a new column to a dataFrame
+df['Three']=pandas.Series([10,20,30], index=['a','b','c'])
+df
+# loc is used when know the name of row ids and we want to filter centain records
+df.loc['a']
+# iloc is used we want to filter data by position
+df.iloc[0]
+# iteritems- pick each column one by one and give all the rows for those columns
+# itertuples- returns a all the rows one by one in a form of series
+# iterrows - returns all the rows one by one for all the columns. It do not return series
+# itertuples is most frequently used to print clean records
+# also it is used to filter data based on certain condition
+
+d={'name':['Amit','Sumit'],
+   'age':[10,20]}
+df=pandas.DataFrame(d)
+df
+df[(df.age>10)]
+df[(df.age>10)].name
+# if you are showing this to a client and you dont want to show the type
+df[(df.age>10)].name.to_string(index=False)
+# a better answer to the problem
+for row in df.itertuples():
+    print(row)
+for row in df.itertuples():
+    if row[2]>10:
+        print(row[1])
+# another example to get just the name df=pandas.read_csv('students.csv')
+                                       # for row in df.itertuples():
+                                       #     if row[2]=='One':
+                                       #            print(row[1])
+# total foe i in df1.itertuples():
+#           sumall=i[3]+i[4]+[5]
+#            if sumall> 120:
+#                  print(i[1],"secured", sumall, "as total mark in all subjects")
+
+d={'name':['Amit','Sumit'],
+   'age':[10,20]}
+df= pandas.DataFrame(d)
+for i,k in df.iteritems(): # print but column
+    print(i)
+    print(k)
+# iterrows
+for i,k in df.iterrows():
+    print(i)
+    print(k)
+df
+# drop a column
+dfnew=df.drop('age', axis=1) # this will return a data frame with drop column age
+dfnew
+df.drop('age', axis=1, inplace=True) # this will drop a column from the original dat frame
+df
+#df.drop('age','gender','salary' axis=1, inplace=True) if you want to delete from the one column
+# axis=1 means we are deleting column
+# if you do not give axis=1 you will drop a row, if that is the case you have to give row id
+df.drop(0)
+df.drop(0)
+d={'name':['Amit','Sumit'],
+   'age':[10,20]}
+d1={'gender':['M','M'],
+   'section':[8,9]}
+df1=pandas.DataFrame(d)
+df2=pandas.DataFrame(d1)
+pandas.concat([df1,df2], axis=1) # this concatenate parallely
+pandas.concat([df1,df2]) # this concatenate one bellow another and puts NaN in missing values
+# read and write to a data base table
+# from sqlalchemy import create_engine
+# engine = create_engine( 'sqlite:///:memory:')
+# pd.read_sql ("select * from my_table;", engine)
+# pd.read_sql_table('my_table', engine)
+# pd.read_sql_query("select * from my_table;", engine)
+import numpy 
+arr1=numpy.array([10,20,30])
+arr1
+arr1*2
+arr1/2
+arr1**2
+arr1.shape
+arr1=numpy.array([[10,20,30],[40,50,60],[70,80,90]])
+arr1.shape
+arr1.ndim # dimension
+arr1.data
+arr1
+arr1[0]# pick up oth row
+arr1[1]# pick up 1th row
+arr1[1,1]# this will pick up 1 row and 1 column
+arr1[2,2]
+arr1[:,2]
+arr1[:,2]=[9,9,9]
+arr1
+x=numpy.zeros(3)
+x
+x=numpy.zeros(3, dtype=numpy.int_) # you can make arrays this way
+x
+x=numpy.ones(3, dtype=numpy.int_)
+x
+# deep copy - like copying numpy array to different location in memory
+# shallow copy - like hard link,changes in one will be reflected in another
+
+arr1=numpy.array([10,20,30])
+arr2=arr1.copy() # this is deep copy changes in one will not be reflected in another
+arr1
+arr1=numpy.array([10,20,30])
+arr2=arr1.view()
+arr1
+arr2
+arr2[0]=100
+arr1
+arr2
+x=numpy.arange(10)
+x
+x=numpy.arange(10,20)
+x
+x=numpy.arange(10,20,2)# start,end,jump
+x
+arr1=numpy.array([[10,20,30],[40,50,60],[70,80,90]])
+arr1
+arr1.sum()
+arr1.mean()
+arr1.max()
+arr1.min()
+arr1.std()
+arr1=numpy.array([[1,2],[3,4],[5,6]], float)
+arr1
+arr2=numpy.array([-1,3], float)
+arr1+arr2
+arr1*arr2
+arr1.transpose() # is the interchanging of rows and columns from 3x2 to 2x3 like a pivot table
+numpy.eye(3) # ramdolly put 1 and 0 
+''' 1. I want to filter name of all the countries where land area> 2000 sq km
+2. I want to see the relationship between birth rate and gpd in a form of scatter plot
+3. I want to plt a pie chart of top ten countries having gpd along with their share
+'''
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+dataset=pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\AllCountries.csv')
+print(dataset)
+dataset.shape
+dataset.columns
+dataset.dtypes
+# we create a data frame of all the columns of our intest rather than reading whole data
+select_data=dataset.loc[:,['Country','LandArea']]
+
+# we create a data frame of all the columns of our intest rather than reading whole data
+select_data=dataset.loc[:,['Country','LandArea']]
+#1. I want to filter name of all the countries where land area> 2000 sq km
+print("countries having land area greater than 2000 sq km are")
+for i in select_data.itertuples():
+    if i[2]>2000:
+        print(i[1])
+import matplotlib.pyplot as plt
+# we create a data frame of all the columns of our intest rather than reading whole data
+select_data=dataset[['BirthRate','GDP']]
+#2. I want to see the relationship between birth rate and gpd in a form of scatter plot
+birth_array=np.array(select_data['BirthRate'])
+gdp_array=np.array(select_data['GDP'])
+plt.scatter(birth_array,gdp_array)
+plt.xlabel("GDP of all countries")
+plt.ylabel("Birth Rate")
+plt.title("Relationship between GDP and birth rate")
+plt.show()
+# we create a data frame of all the columns of our intest rather than reading whole data
+select_data=dataset[['Country','GDP']]
+#3. I want to plt a pie chart of top ten countries having gpd along with their share
+sorted_data=select_data.sort_values(by='GDP', ascending=False)
+selected_sorted_data=sorted_data.iloc[:10] # this will pick up the top rows
+plt.pie(selected_sorted_data['GDP'], labels=selected_sorted_data['Country'],autopct='1.1f%%')
+#last percent I have given to show % symbol in graph
+plt.show()
+'''
+1. remove all the rows where more than 2 columns have missing value
+2. I want the top 10 countries having highest female labor and print their GDP and country name
+along with pie chart of GDP and country
+3. in the original dataset count the number of missing values in all columns
+and figure out which column has highest missing values
+4. find the correlation between the variables in a form of heat map
+---hint: -use seaborn library for the same.
+5. find the column having minimum variance and then print name of that column 
+first understand theoritically what is variance.
+6. print missing values ratio for all the columns
+ ratio: number of missing values/total number of values in that column
+7. print names and their GDP of all countries which contains A a T t m M any one of them
+8. use aggregate function on dataframe and print results like this
+
+Afghanistan : sum of all numerical fields 1549.712 (ignore missing values)
