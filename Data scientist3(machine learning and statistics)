@@ -19,4 +19,505 @@ house = pd.read_csv("kc_house_data.csv")# Code to read in kc_house_data.csv
 # Display the correlation matrix for the columns price, bedrooms, and sqft_living, in that order
 print(house[['price','bedrooms','sqft_living']].corr())# Code to calculate correlation matrix
 
+'''1.8 LAB: Creating SLR models using linregress()
+The kc_house_data dataset contains information on house sale prices in King County, Washington from May 2014 and May 2015. The columns include sale price, number of bedrooms, and square footage of living space.
+
+Load the data set into a data frame.
+Find the correlation matrix for the price, bedrooms, and sqft_living columns.
+Set y = house.price and x equal to the column with the highest correlation.
+Use the linregress() function to perform a simple linear regression on x and y.
+Ex: If the number of bathrooms and square footage of the lot, bathrooms and sqft_lot, are used instead of bedrooms and sqft_living, the output is:
+
+              price  bathrooms  sqft_lot
+price      1.000000   0.525138  0.089661
+bathrooms  0.525138   1.000000  0.087740
+sqft_lot   0.089661   0.087740  1.000000
+LinregressResult(slope=280.6235678974481, intercept=-43580.74309447361, rvalue=0.7020350546117996, pvalue=0.0, stderr=1.9363985519989153, intercept_stderr=4402.689690303904) '''
+import scipy.stats as st
+import pandas as pd
+
+house = pd.read_csv("kc_house_data.csv")
+
+print(house[['price', 'bedrooms', 'sqft_living']].corr())
+y= house.price
+x= house.sqft_living
+
+model = st.linregress(x,y)
+
+print(model)
+
+'''1.9 LAB: Making predictions using SLR models
+The kc_house_data dataset contains information on house sale prices in King County, Washington from May 2014 and May 2015. The columns include sale price, number of bedrooms, and square footage of living space.
+
+Write a program using the ols() function that creating a model that takes in the square footage of living space in a house and gives the price of the house as output.
+
+For example, if the input is:
+
+1000
+the output should be:
+
+0    237042.824803
+dtype: float64 '''
+
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as sms
+
+house = pd.read_csv('kc_house_data.csv')# load the file kc_house_data.csv
+model =sms.ols('price ~ sqft_living ',data=house).fit() # fit a linear model using the sms.ols function and the house dataframe
+
+area = float(input())
+
+prediction =model.predict(exog = {'sqft_living':area}) # use the model.predict function to find the predicted value for price using 
+             # the area value for the predictor
+
+print(prediction)
+
+'''2.9 LAB: Multiple regression
+The kc_house_data dataset contains information on house sale prices in King County, Washington from May 2014 and May 2015. The columns include sale price, square footage of living space, and condition of the house.
+
+Load the data set into a data frame.
+Use the ols function to perform a multiple linear regression with price as the response variable and sqft_living and condition as the predictor variables.
+Create an analysis of variance table using the results of the multiple regression.
+Ex: If bedrooms is used instead of condition the output is:
+
+                   sum_sq       df             F         PR(>F)
+sqft_living  1.199317e+15      1.0  18040.167832   0.000000e+00
+bedrooms     4.063538e+13      1.0    611.238731  4.244531e-133
+Residual     1.436641e+15  21610.0           NaN            NaN  '''
+
+# Import the necessary modules
+import pandas as pd
+import statsmodels.api as st
+from statsmodels.formula.api import ols
+
+housing = pd.read_csv("kc_house_data.csv") # Code to read in kc_house_data.csv
+
+
+# Perform multiple linear regression on price, sqft_living, and condition
+results =ols('price ~ sqft_living + condition', data=housing).fit() # Code to perform multiple regression using statsmodels ols 
+
+# Create an analysis of variance table
+aov_table = st.stats.anova_lm(results, typ=2) # Code to create ANOVA table
+
+# Print the analysis of variance table
+print(aov_table)
+
+'''
+2.10 LAB: Making predictions using MLR models
+The wine dataset contains 4,898 instances with 11 features that include pH, percentage of alcohol, and others, used to predict wine quality. Constructing a box plot for the free sulphur dioxide feature shows a right-skewed distribution.
+
+Write a program that creates a model that uses chlorides, pH, and alcohol as predictor variables and returns the quality as the response variable.
+
+If the inputs are:
+
+0.03
+4
+10
+the output should be:
+
+0    5.975599
+dtype: float64 '''
+
+# load the necessary modules
+import pandas as pd
+import statsmodels.formula.api as sms
+import numpy as np
+
+wine = pd.read_csv("wine.csv") # load wine.csv
+wine.dropna(inplace = True)
+x=wine[['chlorides','pH', 'alcohol']]
+y=wine['quality']
+model = sms.ols('quality~chlorides+pH+alcohol',data=wine).fit() # fit a multiple regression model using the sms.ols function
+
+chlorides = float(input())
+pH = float(input())
+alcohol = float(input())
+
+prediction = model.predict(exog=dict(chlorides=[chlorides],pH=[pH],alcohol=[alcohol])) # use the model.predict function to find the predicted value for quality using 
+             # the input values for chlorides, pH, and alcohol
+
+print(pd.Series(prediction))
+
+
+'''2.11 LAB: Calculating VIF using variance_inflation_factor()
+The kc_house_data dataset contains information on house sale prices in King County, Washington from May 2014 and May 2015. The columns include sale price, and a number of variables that might affect the price.
+
+Load the data set into a data frame.
+Create matrices y, from the price column, and X, from the bedrooms, bathrooms, sqft_living, sqft_lot, yr_built, and sqft_living15 columns.
+calculate the VIF for each predictor variable.
+Ex: If sqft_lot15 is used instead of sqft_living15 the output is:
+
+[1.563916, 2.961241, 2.742922, 2.076869, 1.382412, 2.094995] '''
+
+# import the necessary modules
+import pandas as pd
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from patsy import dmatrices
+
+house =pd.read_csv("kc_house_data.csv") # read in the csv file
+
+y, X =dmatrices ('price ~ bedrooms+ bathrooms +sqft_living + sqft_lot + yr_built + sqft_living15',data=house,return_type= "dataframe")# create matrices y, from the price column, and X, from the bedrooms, bathrooms, sqft_living, sqft_lot, yr_built, and sqft_living15 columns
+
+vif =[variance_inflation_factor(X.values, i+1) for i in range(X.shape[1]-1)] # calculate the VIF for each X_i
+
+result = [round(num, 6) for num in vif]
+print(result)
+
+
+'''2.12 LAB: Confidence and prediction intervals for MLR models
+The wine dataset contains 4,898 instances with 11 features that include pH, percentage of alcohol, and others, used to predict wine quality. Constructing a box plot for the free sulphur dioxide feature shows a right-skewed distribution.
+
+Write a program that outputs the confidence and prediction intervals of a model that uses chlorides, pH, and alcohol as predictor variables and returns the quality as the response variable, given inputs for the predictor variables.
+
+If the inputs are:
+
+0.03
+4
+10
+the output should be:
+
+mean   mean_se   mean_ci_lower   mean_ci_upper   obs_ci_lower   obs_ci_upper  
+0   5.975599   0.063751  5.850619   6.10058   4.412228   7.53897  '''
+
+# load the necessary modules
+import pandas as pd
+import statsmodels.formula.api as sms
+
+
+wine = pd.read_csv("wine.csv") # load wine.csv
+wine.head()
+
+model =sms.ols(formula='quality ~chlorides+ pH+ alcohol ', data=wine).fit() # fit a multiple regression model using the sms.ols function
+
+chlorides = float(input())
+pH = float(input())
+alcohol = float(input())
+
+new = pd.DataFrame.from_dict({'chlorides' : [chlorides], 'pH' : [pH], 'alcohol' : [alcohol]})
+new.head()
+# create a pandas dataframe with chlorides, pH, and alcohol as columns 
+# with 1 row representing an instance with the given inputs for each column
+pd.set_option('expand_frame_repr', False)
+intervals = model.get_prediction(new, weights = 1).summary_frame(alpha = 0.05)
+# use the get_prediction function using weights = 1 and alpha = 0.05 to obtain the 
+# the prediction and confidence intervals
+
+print(intervals)
+
+'''3.7 LAB: Regression with categorical predictors
+The insurance.csv data base contains insurance information for 1338 people. The columns report the age, sex, BMI, number of children, smoker status, and geographical region of each individual, as well as the insurance charges.
+
+Load the data set into a data frame.
+Recode the categorical variable smoker into a dummy variable, smoke.
+Use the ols function to perform a multiple regression with charges as the response variable and age, bmi, and smoke, in that order, as the predictor variables
+Create an analysis of variance table using the results of the multiple regression.
+If the number of children is used instead of BMI, the output is:
+
+                  sum_sq      df            F        PR(>F)
+age         1.963476e+10     1.0   483.557436  1.062319e-91
+children    4.592837e+08     1.0    11.311064  7.923099e-04
+smoker_yes  1.237765e+11     1.0  3048.320439  0.000000e+00
+Residual    5.416683e+10  1334.0          NaN           NaN '''
+
+# Import the necessary modules
+import pandas as pd
+import statsmodels.api as sma
+import statsmodels.formula.api as sms
+ins = pd.read_csv("insurance.csv")# Code to read in insurance.csv
+ins.dropna(inplace = True)
+# Recode the column smoker into a dummy variable with the prefix smoker
+smoke = pd.get_dummies(ins.smoker)
+
+# Perform multiple linear regression with charges as the response variable and age, bmi and smoke 
+# in that order, as the predictor variables
+ins['smoker_yes'], ins['smoker_no'] = smoke['yes'], smoke['no']
+
+results = sms.ols('charges ~ age + bmi + smoker_yes', data = ins).fit() # Code to perform multiple regression using statsmodels ols 
+
+# Create an analysis of variance table
+aov_table =sma.stats.anova_lm(results, typ = 2) # Code to create ANOVA table
+
+# Print the analysis of variance table
+print(aov_table)
+
+
+'''3.8 LAB: Models with interaction terms
+The forestfires.csv data base contains information on 517 forest fires that occurred in Montesinho Natural Park in Portugal. The columns report the temperature, relative humidity, wind speed, and amount of rainfall at the time of the fire, as well as the area burned.
+
+Read in the file forestfires.csv.
+Perform multiple linear regression using the ols() function with area as the response variable and wind and the interaction term RH*temp, in that order, as the predictor variables.
+Create and print the ANOVA table.
+If rain is used instead of wind, the output is:
+
+                sum_sq     df         F    PR(>F)
+rain      1.239028e+01    1.0  0.003071  0.955829
+RH        1.435916e+03    1.0  0.355894  0.551059
+temp      9.949932e+03    1.0  2.466107  0.116943
+RH:temp   3.238244e+03    1.0  0.802604  0.370737
+Residual  2.065752e+06  512.0       NaN       NaN '''
+
+# Import necessary modules
+import pandas as pd
+import statsmodels.api as sma
+import statsmodels.formula.api as sms
+
+fires = pd.read_csv("forestfires.csv") # Read in forestfires.csv as dataframe
+
+fires.dropna(inplace = True)
+# Fit a multiple regression model using sms.ols() with the response variable area and the predictor variable wind 
+# and the interaction term RH*temp, in that order.
+model = sms.ols('area ~ wind + RH*temp ', data = fires).fit()# Code for multiple regression model
+
+# Create an analysis of variance table
+aov_table = sma.stats.anova_lm(model, typ = 2)# Code to create ANOVA table
+
+print(aov_table)
+
+
+'''
+4.9 LAB: Logistic regression
+The file Invistico_Airline_LR.csv contains information from an airline using the alias Invistico Airline on customer satisfaction, as well as details on each customer. The columns of interest are Gender, Age, Class, Flight_Distance, Departure_Delay_in_Minutes, Arrival_Delay_in_Minutes, and satisfaction.
+
+Read the file Invistico_Airline_LR.csv into a data frame.
+Re-code the categorical variables Gender, Class, and satisfaction in to dummy variables.
+Create a new data frame X from the predictor variables Gender_female, Age, Class_Eco, Flight_Distance, Departure_Delay_in_Minutes, and Arrival_Delay_in_Minutes, in that order.
+Create a response variable Y from the dummy variable satisfaction_satisfied.
+Perform logistic regression on X and Y.
+Print the parameters of the logistic regression model.
+Ex: If only the variables Gender_female, Age, Class_Eco, Flight_Distance, and Departure_Delay_in_Minutes are used as predictors, the output is:
+
+const                        -1.681250
+Gender_Female                 2.868598
+Age                           0.000368
+Class_Eco                     0.350065
+Flight_Distance              -0.000354
+Departure_Delay_in_Minutes   -0.009452
+dtype: float64 '''
+# import the necessary modules
+import pandas as pd # Importing the pandas library
+import scipy.stats as stats
+import statsmodels.api as sm
+from statsmodels.tools import add_constant 
+
+
+flights = pd.read_csv("Invistico_Airline_LR.csv")  # read in Invistico_Airline_LR.csv
+flights.dropna(axis = 0, inplace = True)
+
+flights = pd.get_dummies(flights, columns=['satisfaction','Gender', 'Class']) # create dummy variables for the categorical variables satisfaction, Gender, and Class
+
+X = flights[['Gender_Female', 'Age', 'Class_Eco', 'Flight_Distance', 'Departure_Delay_in_Minutes', 'Arrival_Delay_in_Minutes']] # create a new data frame using the variables Gender_female, Age, Class_Eco, Flight_Distance, Departure_Delay_in_Minutes, and Arrival_Delay_in_Minutes, in that order
+
+X = add_constant(X)
+Y = flights['satisfaction_satisfied']  # set satisfaction_satisfied as the response variable
+
+model = sm.GLM(Y, X, family=sm.families.Binomial()).fit()# perform logistic regression on X and Y
+
+print(model.params)
+
+
+'''4.10 LAB: Prediction with Logistic Regression
+The file Invistico_Airline_LR.csv contains information from an airline using the alias Invistico Airline on customer satisfaction, as well as details on each customer. The columns of interest are Gender, Age, Class, Arrival_Delay_in_Minutes, and satisfaction.
+
+Read the file Invistico_Airline_LR.csv into a data frame.
+Obtain user defined values female, age, economy, and delay.
+Re-code the categorical variables Gender, Class, and satisfaction into dummy variables.
+Create a new data frame X from the predictor variables Gender_female, Age, Class_Eco, and Arrival_Delay_in_Minutes, in that order.
+Create a response variable Y from the dummy variable satisfaction_satisfied.
+Perform logistic regression on X and Y.
+Use the user defined values to predict the probability that a customer with those values is satisfied.
+Ex: If the input is 1 34 0 10 the ouput is:
+
+[0.62343979] '''
+
+# import the necessary modules
+import pandas as pd 
+import statsmodels.api as sm
+from statsmodels.tools import add_constant 
+import numpy as np
+
+female = int(input())
+age = float(input())
+economy = int(input())
+delay = float(input())
+
+flights = pd.read_csv("Invistico_Airline_LR.csv") # read in the file Invistico_Airline_LR.csv
+
+
+# remove missing data
+flights.dropna(axis = 0, inplace = True)
+
+
+flights = pd.get_dummies(flights, columns=['satisfaction','Gender', 'Class'])# recode the categorical variables Gender, Class, and satisfaction as dummy variables
+
+X = flights[['Gender_Female', 'Age', 'Class_Eco', 'Arrival_Delay_in_Minutes']] # create a new data frame from the variables Gender_Female, Age, Class_Eco, and Arrival_Delay_in_Minutes, in that order.
+
+X = add_constant(X)
+Y = flights.satisfaction_satisfied # set Y as the response variable satisfaction_satisfied
+
+model = sm.GLM(Y, X, family=sm.families.Binomial()).fit()# perform logistic regression on X and Y
+
+ex =np.array([[1,female,age,economy,delay]])
+
+prediction= model.predict(exog=ex) # find the predicted probablility that a customer with the user input values is satisfied
+print(prediction)
+
+
+'''5.4 LAB: Logarithmic transformation
+Logarithmic transformation is often performed to reduce a data set's skewness and decrease the variability to satisfy the conditions of a normal distribution.
+
+The wine dataset contains 4,898 instances with 11 features that include pH, percentage of alcohol, and others, used to predict wine quality. Constructing a box plot for the free sulphur dioxide feature shows a right-skewed distribution.
+
+Load the wine.csv dataset.
+Subset the free sulfur dioxide feature.
+Log-transform the values of free sulfur dioxide.
+The output should be:
+
+0    3.806662
+1    2.639057
+2    3.401197
+3    3.850148
+4    3.850148
+Name: free sulfur dioxide, dtype: float64 '''
+
+# load the pandas module
+# load the numpy module
+import pandas as pd
+import numpy as np
+
+wine =pd.read_csv('wine.csv') # load the wine.csv dataset
+
+sulfur = wine['free sulfur dioxide']# subset the free dioxide feature
+
+sulfur_log = sulfur.map(lambda x: np.log(x)) # log transform the values
+
+print(sulfur_log.head())
+
+
+'''5.5 LAB: Regression with transformed variables
+mtcars is a historical dataset from a 1974 issue of Motor Trend comparing the performance of 32 cars.
+
+Load the mtcars.csv data set into a data frame.
+Create a new column in the data frame, exp_wt, that is the negative exponentiation of of the column wt.
+Use the ols function to perform a multiple regression with mpg as the response variable and wt and exp_wt, in that order, as the predictor variables.
+Create an analysis of variance table using the results of the multiple regression.
+Ex: If the column qsec is used as the response variable instead of mpg, the output is:
+
+             sum_sq    df         F    PR(>F)
+wt         0.397038   1.0  0.120078  0.731452
+exp_wt     0.077859   1.0  0.023547  0.879105
+Residual  95.888614  29.0       NaN       NaN '''
+
+# Import the necessary modules
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+cars =pd.read_csv("mtcars.csv") # Code to read in mtcars.csv
+
+# Create a new column in the data frame called exp_wt which is the negative exponentiation of the column wt
+cars["exp_wt"]=np.exp(-cars["wt"])
+# Perform multiple linear regression with mpg as the response variable and wt and exp_wt 
+# in that order, as the predictor variables
+
+results = ols('mpg ~ wt+ exp_wt', data=cars).fit() # Code to perform multiple regression using statsmodels ols 
+# Create an analysis of variance table
+aov_table =sm.stats.anova_lm(results, typ=2) # Code to create ANOVA table
+
+# Print the analysis of variance table
+print(aov_table)
+
+
+'''6.5 LAB: Forward selection using ols()
+The forestfires.csv data base contains meteorological information and the area burned for 517 forest fires that occurred in Montesinho Natural Park in Portugal. The columns of interest are FFMC, DMC, DC, and ISI, as well as the response variable, area.
+
+Read in the file forestfires.csv.
+Use the ols() function to perform forward selection stepwise regression on the variables FFMC, DMC, DC, and ISI, in that order.
+Continue the stepwise regression until no new variables have a p-value less than 0.15.
+Ex: If the variable RH is used instead of FFMC, the output is:
+
+model1_1 p-values are  Intercept    1.384309e-96
+RH           1.577449e-01
+dtype: float64
+model1_2 p-values are  Intercept    3.710545e-158
+DMC           8.598943e-01
+dtype: float64
+model1_3 p-values are  Intercept    3.005972e-138
+DC            2.139832e-02
+dtype: float64
+model1_4 p-values are  Intercept    4.580488e-144
+ISI           5.785291e-01
+dtype: float64
+model2_1 p-values are  Intercept    1.284725e-75
+RH           1.838245e-01
+DC           2.450738e-02
+dtype: float64
+model2_2 p-values are  Intercept    2.969390e-136
+DMC           1.642624e-02
+DC            9.065366e-04
+dtype: float64
+model2_3 p-values are  Intercept    1.656648e-113
+DC            2.569129e-02
+ISI           9.756819e-01
+dtype: float64
+model3_1 p-values are  Intercept    3.247158e-76
+RH           3.108264e-01
+DMC          2.520680e-02
+DC           1.521100e-03
+dtype: float64
+model3_2 p-values are  Intercept    3.674604e-114
+DMC           1.397040e-02
+DC            9.735041e-04
+ISI           5.855461e-01
+dtype: float64  '''
+
+# import the necessary modules
+import pandas as pd
+
+import statsmodels.formula.api as smf
+
+fires = pd.read_csv("forestfires.csv")# read in the csv file
+
+# response variable
+Y = fires['area']# set area as the response variable
+
+# first forward selection step
+
+model1_1 =smf.ols('Y ~ FFMC', data=fires).fit() # generate the linear regression model for FFMC
+
+# prints the p-value
+print("model1_1 p-values are ", model1_1.pvalues)
+
+model1_2 = smf.ols('Y ~ DMC', data=fires).fit() # generate the linear regression model for wind
+print("model1_2 p-values are ", model1_2.pvalues)
+
+model1_3 = smf.ols('Y ~ DC', data=fires).fit() # generate the linear regression model for DC
+print("model1_3 p-values are ", model1_3.pvalues)
+
+model1_4 =smf.ols('Y ~ ISI', data=fires).fit() # generate the linear regression model for temp
+print("model1_4 p-values are ", model1_4.pvalues)
+
+# Second forward selection step using order FFMC, wind, DC, temp. Ex: If the best SLR model uses temp, the first MLR model should be Y ~ FFMC + temp.
+model2_1 = smf.ols('Y ~ FFMC + DC', data=fires).fit() # generate multiple regression model 
+print("model2_1 p-values are ", model2_1.pvalues)
+
+model2_2 = smf.ols('Y ~ DMC + DC', data=fires).fit() # generate multiple regression model
+print("model2_2 p-values are ", model2_2.pvalues)
+
+model2_3 =smf.ols('Y ~ DC + ISI', data=fires).fit() # generate multiple regression model
+print("model2_3 p-values are ", model2_3.pvalues)
+
+# Third forward regression step using order FFMC, wind, DC, temp
+model3_1 =smf.ols('Y ~ FFMC + DMC + DC', data=fires).fit() # generate multiple regression model
+print("model3_1 p-values are ", model3_1.pvalues)
+
+model3_2 = smf.ols('Y ~ DMC + DC + ISI', data=fires).fit() # generate multiple regression model
+print("model3_2 p-values are ", model3_2.pvalues)
+
+# Continue until no additional predictor variables have p-values less than 0.15.
+
+
+
+
 
