@@ -1,0 +1,67 @@
+# homework
+# confusion churn case study
+# decision tree--> breast cancer data
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+import warnings
+warnings.filterwarnings('ignore')
+churn= pd.read_csv(r'C:\Users\Carlos\Desktop\data sets\Churn_Modelling.csv')
+#customer= pd.read_csv(r'C:\Users\Carlos\Desktop\data sets')
+#internet= pd.read_csv(r'C:\Users\Carlos\Desktop\data sets')
+churn.head()
+df=pd.merge(churn, customer, how='Inner', on='CustomerId')
+tel=pd.merge(df, internet, how='Inner', on='CustomerId')
+tel.head()
+tel.shape()
+tel.describe()
+tel.Contract.unique()
+# data preparation/ prepocessing
+# convert binary data like yes/no to 1/0
+varlist=['PhoneService','PaperlessBilling','Churn','Partner','Dependents']
+def bin_map(x):
+    return x.map({'Yes':1, 'No':0})
+tel[varlist]=tel[varlist].apply(bin_map)
+tel.head()
+dummy=pd.get_dummies(tel[['Contract','PaymentMethod','gender','Internetservice']].drop_first=True)
+tel=pd.concat([tel,dummy], axis=1)
+ml=pd.get_dummies(tel['MultipleLines'],prefix'MultipleLines')
+tel=pd.concat([tel,ml], axis=1)
+os=pd.get_dummies(tel['OnlineSecurity'],prefix'OnlineSecurity')
+tel=pd.concat([tel,os], axis=1)
+ob=pd.get_dummies(tel['OnlineBackup'],prefix'OnlineBackup')
+tel=pd.concat([tel,ob], axis=1)
+dp=pd.get_dummies(tel['deviceProtection'],prefix'deviceProtection')
+tel=pd.concat([tel,dp], axis=1)
+tel['TotalCharges']=pd.To_numeric(tel['TotalCharges'],erros='coerce')
+tel.info()
+# checking outliers at 25%, 50%, 75%....
+num_tel.describe(percentiles=[.25,.5, .75, .90, .95, .99])
+# adding up missing values(column)
+tel.isnull().sum()
+'''From database to excel'''
+from sqlalchemy import create_engine, inspect
+import pandas as pd
+engine= create_engine('sqlServer:///soccer_database.sqlServer') # connect to database
+inspect(engine).get_tables_name()
+query= """
+select Match.id,
+    League.name AS Hometeam,
+    season,
+    home_team_goal as HomeGoals,
+    away_team_goak=l as AwayGoals
+from Match
+    join Country on country.id = Match.country_id
+    Left join team as HT.team_api_id = Match.home_team_api_id
+where leagie_id=1729 AND season ='2015/2016'
+"""
+
+premier_league_games = pd.read_sql(query, engine)
+premier_league_games.head()
+premier_league_games.to_excel('premier_league_games.xlsx')# convert tyo excel
