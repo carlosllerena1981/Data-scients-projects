@@ -1,1 +1,914 @@
+ 
+Write a query that returns a unique list of cities both customers and supliers reside in.
+
+Tables: Purchasing.Suppliers, Sales.Customers
+Columns: PostalCitysID
+------------------------------------------------------------------------------
+Select CityName FROM Application.Cities WHERE CityID in (
+Select PostalCityID From PurChasing.Supplier
+Union
+Select PstalCityID From Sales.Customers);
+-------------------------------------------------------------------------------
+returns employee and personal information from 3 tables
+Tables: HumanResorces.Employee, Person.Person, Person.EmailAddress
+Columns: Firname, LastNmae, JobTitle, HireDate, EmailAddress
+
+Select p.FirstName,p.LastName, emp.JobTitle, emp.HireDate, ea.EmailAddress
+FROM HumanResorces.Employee emp
+JOIN Person.Person p ON emp.BusinessEntityID = p.BusinessEntityID
+JOIN Person.EmailAddress ea ON emp.BusinessEntiryID = ea.BusinessID;
+-------------------------------------------------------------------------------
+Change date
+Select 'today date is' + CAST(GETDATE() AS NVARCHAR)
+
+Find orderdate from 2016
+SARG-able
+
+Select OrderID, OrderDate, YEAR(OrderDate) as OrderYear
+FROM Sales.Orders
+WHERE OrderDate >= '20160101' AND OrderDate<= '20191231';
+-----------------------------------------------------------------------------
+Write a query that returns the total amount due for each salesperson by year.
+Table: Sales.SalesOrderHeader
+Columns: SalesPersonID, OrderYear, TotalDue
+Grouping: SalesPersonID, OrderYear
+Filter: Do not include Null SalesPersonIDs
+Sort: SalesPersonID ascending, OrderYear descending
+
+Check data first
+Select SalesPersonID, OrderDate, TotalDue
+FROM Sales.SalesOrderHeader;
+
+Select SalesPersonID, YEAR(OrderDate) AS OrderYear, SUM(TotalDue) AS (TotalDue)
+From Sales.SalesOrderHeader
+WHERE SalesPersonID IS NOT NULL
+GROUP BY (SalesPersonID, YEAR(OrderDate))
+ORDER BY SalesPersonID, YEAR(OrderDate)
+ORDER BY SalesPersonID, OrderYear DESC;
+--------------------------------------------------------------------------------
+
+Assume we have a column TotalOrders in a Customer table with 100 rows and 20 of those rows have a value of NULL in TotalOrders.
+What do we need to do in order to insure we are getting the average of all 100 rows
+
+AVG(COALESCE(TotalOrders,0))
+-------------------------------------------------------------------------------------------
+
+Assume it is June 1, 2020. Which query will produce the output: Congratulations, your birthday is 06/01/2020
+
+SELECT ‘Congratulations, your birthday is ‘ + CONVERT(NVARCHAR, GETDATE(),101
+--------------------------------------------------------------------------------------------------
+
+Delete
+Delete from Sales.OrderLines
+WHERE OrderID =1;
+// delete row and can be recover in logs
+TRUNCATE from Sales.OrderLines
+// delete all the rows in the table 
+cannot be recover
+--------------------------------------------------------------------------------------------
+INSERT statement that adds a new customer category named BEST CATEGORY EVER
+INSERT INTO [Sales].[CustomerCategories]
+            ([CustomerCategoryID],
+             [CustomerCategoryName],
+             [LastEditedBy])
+       Values
+            (DEFAULT
+             ,'BEST CATEGORY EVER'
+             ,1)
+GO
+
+UPDATE statement that modifies customers in category 5 to the new category crested above
+UPDATE [Sales].[Customers]
+   SET [CustomerCategoryID]=9
+WHERE CustomerCategoryID=5;
+GO
+------------------------------------------------------------------------------------------
+week 1 Lab6 Write Basic Select Queries
+Part 1 
+Using the AdventureWorks database, select all of the data from the table Products in the Production schema. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Use AdventureWorks;
+
+Select * FROM Production.Product;
+
+Part 2 
+Using the AdventureWorks database, select the ProductNumber, Name, ListPrice, ReorderPoint and 
+DaysToManufacture from the table Production.Product. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select ProductNumber, Name,ListPrice,ReorderPoint,DayToManufacture
+FROM Production.Product
+
+Part 3 Using the AdventureWorks database, select the ProductNumber,
+Name, ListPrice, ReorderPoint and DaysToManufacture from the table
+Production.Product and sort by ListPrice and DaysToManufacture, both
+in descending order. Take a screen shot of the SQL windows and results
+and paste it here.
+
+Select ProductNumber, Name,ListPrice,ReorderPoint,DayToManufacture
+FROM Production.Product
+ORDER BY LisPrice DESC, DaysToManufacture DESC
+
+Part 4 Using the AdventureWorks database, select the unique lastname
+from the table Person in Person schema.Takea screen shot of the SQL
+windows and results and paste ithere.
+
+Select DISTINCT LASTNAME
+FROM Person.Person;
+
+Part 5 Using the AdventureWorks database, select all the rows from the
+table Product in Production schema and sort it by product name within
+standard cost with standard cost going from highest to lowest Take a
+screen shot of the SQL windows and results and paste it in here.
+
+SELECT * FROM Production.Product
+ORDER BY Name DESC;
+
+
+
+Lab 7 Filtering results
+
+Part 1 Using the WideWorldImporters database, select fifteen percent
+of the rows from the table Invoices in the Sales schema. Take a
+screen shot of the SQL windows and paste it here.
+
+USE WideWorldImporters
+GO
+
+Select * FROM Sales.Invoices
+
+Select TOP 15 PERCENT * FROM Sales.Invoices
+
+Part 2 Using the WideWorldImporters database, return all the rows
+from the table StockItems in the Warehouse schema that have
+SupplierID of 10 and a ColorID of 4. Take a screen shot of the
+SQLwindows and paste it here.
+
+Select * FROM Warehouse.StockItems
+WHERE SupplerID = 10 AND ColorID = 4;
+
+Part 3 Using WideWorldImporters return all the rows from the table Orders in the Sales
+schema that have an OrderDate that is in the month of April, 2016. You must use the
+Between clause for this query. Take a screen shot of the SQL windows and paste it
+here.
+
+Select * FROM Sales.Orders
+WHERE OrderDate BETWEEN '20160401' AND '20160430';
+
+Part 4 Using the AdventureWorks database, return the LastName, FirstName,
+MiddleName, and PersonType from the table Person in the Person schema whose last
+time starts with the letter ‘S’ and whose PersonType is either an‘SC’ or an ‘IN’. Sort by
+the last name. Take a screen shot of the SQL windows and paste it here.
+
+Select * FROM Person.Person
+
+Select LastName, FirstName, MiddleName, PersonType
+FROM Person.Person
+WHERE LastName LiKE '%S' AND (PersonType = 'sc' or PersonType = 'in')
+ORDER BY LastName ASC;
+
+Part 5 Using the AdventureWorks database, return the LastName, FirstName,
+MiddleName, and PersonTypefrom the table Person in the Person schema whose last
+time starts with the letter ‘S’ and has an ‘m’ anywhere else in the LastName, whose first
+name has an R anywhere in the FirstName, and whose PersonType is either an ‘SC’ or
+an ‘IN’. Sort by the last name and first name. Take a screen shot of the SQL windows
+and paste it here.
+
+Select LastName, FirstName, MiddleName, PersonType
+FROM Person.Person
+WHERE (LastName LiKE '%S' AND LastName LIKE '%m%')AND FirstName LIKE 'R%' AND (PersonType = 'sc' or PersonType = 'in')
+ORDER BY LastName, FirstName;
+
+--------------------------------------------------------------------------------------------------------------
+
+Week 2 Lab 8 Combining Results
+
+Part 1
+Using the WideWorldImporters database, select all rows from the table Colors in the schema Warehouse
+where the ColorID is between 1 and 15 and combine with all rows where the ColorID is between 12 and 20. 
+Eliminate duplicate rows. Take a screen shot of the SQL windows and paste
+Select * from Warehouse.Colors WHERE ColorID Between q and 15
+UNION
+Select * FOM Warehouse.Colors WHERE ColorID Between 12 and 20;
+
+Part 2
+Using the WideWorldImporters database, select all rows from the table Colors in the schema Warehouse 
+where the ColorID is between 10 and 30 and combine with all rows where the ColorID is between 12 and 20.
+Include duplicate rows. Take a screen shot of the SQL windows and paste it here.
+
+Select * FROM Warehouse.Colors WHERE ColorID Between 12 and 30
+UNION ALL
+Select * FROM warehouse.Colors WHERE ColorID Between 12 AND 20;
+
+Part 3
+Using WideWorldImporters select ColorID from the table Colors in the Warehouse schema
+that does not match the ColorID from the table StockItems in the Warehouse schema . 
+Take a screen shot of the SQL windows and paste it here.
+
+Select ColorID FROM Warehouse.Colors
+EXCEPT
+Select ColorID FROM Warehouse.StockItems
+
+
+Part 4
+Using WideWorldImporters select ColorID from the table Colors in the Warehouse schema 
+that matches the ColorID from the table StockItems in the Warehouse schema . 
+Take a screen shot of the SQL windows and paste it here.
+
+Select ColorID FROM Warehouse.Colors
+INTERSECT
+Select ColorID FROM Warehouse.StockItems
+
+
+
+Lab 10 Querying Multiple Tables with JOINS
+  
+Part 1
+Using the WideWorldImporters database and the Sales schema select CustomerName, CreditLimit, PhoneNumber
+from the table Customers and the corresponding CustomerCategoryName, ValidFrom, and ValidTo 
+from the CustomerCategories table. Review the columns to determine how to join the tables. 
+
+Select c.CustomerName, c.CreditLimit, c.PhoneNumber, cc.CustomerCategoryName, cc.ValidFrom, cc.ValidTo
+FROM Sales.Customers AS c
+INNER JOIN Sales.CuastomerCategories AS cc ON c.CustomerCategoryID = cc.CustomerCategoryID;
+
+
+Part 2
+Using the AdventureWorks database and the Production schema, select the Name from the Product table,
+the Name from the ProductSubcategory table, and the Name and ModifiedDate from the ProductModel table. 
+Use appropriate aliases to distinguish the Name columns from each table. 
+Review the columns in each table to determine how to join the tables.
+
+Select p.Name, ps.Name, pm.Name, pm.ModifiedDate
+FROM Production.Product AS p
+Inner JOIN Production.ProductSubCategory AS ps ON p.ProductSubcategoryID = ps.ProductSubcategoryID
+Inner JOIN Production.ProductModel AS pm ON p.ProductModelID=pm.ProductModelID;
+
+
+Part 3
+Using WideWorldImporters and the Sales schema select the CustomerName for the table Customers and the CustomerCategoryName
+from the table CustomerCategories showin all categories with or without customers.
+Review the columns in each table to determine how to join the tables.
+
+Select CustomerName, CustomerCategoryName
+FROM Sales.CustomerCategories AS cc
+LEFT JOIN Sales.Customers AS c ON cc.CustomerCategoryID = c.CustomerCategoryID;
+---------------------------------------------------------------------------------------------
+
+Week 3 
+
+Part 1
+Using the AdventureWorks database and the Production schema write a query that will create the following result
+from the table Product: NAME will start selling on SELLSTARTDATE. NAME and SELLSTARTDATE are columns in the table. 
+SELLSTARTDATE must be in the format mm/dd/yyyy. 
+
+Select Name AS Products, FORMAT(SellstartDate, 'MM/dd/yyyy') AS Date
+FROM Production.Product;
+
+Part 2
+Using the AdventureWorks database and the Production schema write a query that will create the following result 
+from the table Product: NAME with a color of COLOR will start selling in the month of SELLSTARTDATE. NAME, COLOR and SELLSTARTDATE are columns in the table. 
+SELLSTARTDATE must be the month name, e.g, 01 would be January. Eliminate any rows that have a NULL value in COLOR.
+
+Select Name, Color, DATENAME(month, sellstartdate) AS Month
+FROM Production.Product
+WHERE Color is not null;
+
+
+Part 3
+Using the AdventureWorks database and the Person schema, select from the table Address AddressLine1,
+the first three characters of AddressLine1, a column that replaces all zeroes in AddressLine1 with a dash, 
+and the AddressLine1 in reverse order. Use appropriate aliases for each column.
+
+Select AddressLine1,
+       LEFT(AddressLine1, 3) AS Abv_Characters,
+       REPLACE(AddressLine1, 0, '-')AS Address_with_Dash,
+       REVERSE(AddressLine1) AS Reversed_Address
+FROM Person.Address
+----------------------------------------------------------------------------------------------------------
+
+
+Part 1
+Using WideWorldImporters database create a query that returns the StockItemID from the StockItems table in the Warehouse schema,
+the OrderLineID, Quantity, and UnitPrice from the OrderLines table in the Sales schema,
+and the ColorName from the table Colors in the Warehouse schema.
+
+SELECT Si.StockItemID, Ol.OrderID, Ol.Quantity, Ol.UnitPrice, Wc.ColorName
+FROM Warehouse.StockItems AS Si
+Inner JOIN Sales.OrderLines as Ol ON Si.StockItemID = Ol.StockItemID
+Inner JOIN Warehouse.Colorsd as Wc ON Si.ColorID = Wc.ColorID;
+
+Part 2
+Rewrite the query from Part 1 returning the ColorName and the total of all sales (defined as Quantity times UnitPrice),
+the average of all sales, and the total number of sales made. Use appropriate aliases for each of the aggregatge columns.
+
+
+Select Wc.ColorName,
+       SUM(Ol.quatity * Ol.UnitPrice) AS Total_Sales,
+       AVG(Ol.quantity *Ol.UnitPrice) AS Average_Sales,
+       COUNT(*) AS Total_Sales
+FROM Warehouse.Colors AS Wc
+       INNER JOIN Warehouse.StockItems AS Ws ON Wc.ColorId = Ws.ColorID
+       INNER JOIN Sales.OrderLines AS Ol ON Ws.StockItemID = OlStockItemID
+GROUP BY Wc.ColorName;
+
+Part 3
+Rewrite the query from Part 2 returning the ColorName, 
+the Year part of OrderDate from the table Orders in the Sales schema and the total of all sales (defined as Quantity times UnitPrice),
+the average of all sales, and the total number of sales made. Use appropriate aliases for each of the aggregatge columns.
+Only return rows that have a total number of sales of 5000 
+or more and sort the results by total sales from highest to lowest within the year part of OrderDate from newest to oldest.
+
+Select Wc.ColorName,
+       YEAR(OrderDate) AS Year_Ordered
+       SUM(Ol.quatity * Ol.UnitPrice) AS Total_Sales,
+       AVG(Ol.quantity *Ol.UnitPrice) AS Average_Sales,
+       COUNT(*) AS Sales
+FROM Warehouse.Colors AS Wc
+       INNER JOIN Warehouse.StockItems AS Ws ON Wc.ColorId = Ws.ColorID
+       INNER JOIN Sales.OrderLines AS Ol ON Ws.StockItemID = OlStockItemID
+       INNER JOIN Sales.Order AS So ON Ol.OrderID=  So.OrderID
+GROUP BY YEAR(OrderDate), Wc.ColorName
+Having Count(*)>= 5000
+Order By Year_Ordered DESC, Total_sales DESC;
+---------------------------------------------------------------------------------------------------------------
+
+
+Part 1 
+Using AdventureWorks examine the columns in the table Department in the HumanResources schema. 
+Add five new rows into the table for all columns that are not null. 
+Examine the data and pick five DepartmentID values that will unique to meet primary key concerns.
+Take a screen shot of the SQL windows and results and paste it here.
+
+Insert INTO HumanResorurces.Department(Name, GroupName, ModifiedDate)
+            Values('Analytics','Analysis', GETDATE()),
+                  ('PortControl', 'Maritime', GETDATE()),
+                  ('Recycle', 'Maintenance', GETDATE()),
+                  ('Aviation', 'Flights', GETDATE()),
+                  ('Broker', 'RealEstate', GETDATE());
+
+Part 2 
+Select the data from the table for the data inserted into Part 1
+Take a screen shot of the SQL windows and results and paste it here
+
+SELECT * FROM HumanResorces.Department
+WHERE DepartmentID > 16;
+
+
+Part 3 
+Change the GroupName for each of the five rows added in part 1. 
+Take a screen shot of the SQL windows and results and paste it here
+
+UPDATE HumanResources.Department
+SET GroupName = 'Profession'
+WHERE DepartmentID > 16;
+
+Part 4 
+Select the data from the table for the data inserted into Part 1 
+Take a screen shot of the SQL windows and results and paste it here.
+
+SELECT * FROM HumanResources.Department
+WHERE DepartmentID > 16;
+
+Part 5 
+Delete all the rows that were created from Part 1 of the lab. 
+Select the data from the table for the data inserted into Part 1.
+Take a screen shot of the SQL windows and results and paste it here
+
+DELETE FROM HumanResources.Department
+WHERE DepartmentID > 16;
+
+Select * FROM Humanresources.Department
+WHERE DepartmentID > 16;
+-----------------------------------------------------------------------------------------------------
+ Week5 lab18
+
+Part 1 
+Using AdventureWorks database write a query that returns
+the ProductID, Name, Color, ReorderPoint, Weight, and the average weight
+from the table Product. Do not use a Group By clause in this query. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+SELECT ProductID, Name, Color, ReorderPoint,
+Weight,(Select AVG(Weight)FROM Production.Product) AS AverageWeight
+FROM Production.Product;
+
+
+Part 2 
+Using AdventureWorks database write a query that returns the ProductID, Name, Color, ReorderPoint and Weight. 
+Only return rows that have a Weight greater than the average Weight. 
+Do not use a Group By clause in this query. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+SELECT ProductID, Name, Color, ReorderPoint, weight
+FROM Productio.Product
+WHERE Weight > (Select AVG(weight) FROM Production.Product);
+
+
+Part 3
+Using AdventureWorks database write a query that returns the ProductID, Name, Color, and ListPrice 
+from the table Product in the Production schema and Name 
+from the table ProductSubcategory in the Production schema. 
+Only return rows that have a ProductSubcategory Name that contains ‘frames’.
+Take a screen shot of the SQL windows and results and paste it here.
+
+SELECT ProductID, p.Name as ProductName, Color, ListPrice, ps.Name AS SubCategoryName
+FROM Production.Product p
+JOIN (SELECT ProductSubCategoryID, Name FROM Production.ProductSubcategory
+WHERE Name LIKE %frame%)
+ON p.ProductSubCATEGORYid = ps.ProductSubCategoryID;
+-----------------------------------------------------------------------------------------------------------
+
+ Week6 Lab20
+
+Part 1 
+Using AdventureWorks database and the Production schema write a common table expression that returns
+all rows from the table Product in the Production schema and has a Name in the ProductSubcategory table which contains ‘frame’.
+Review the tables to determine the join condition for the tables.
+Run the SQL to return rows from the CTE. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Use AdventureWorks
+Go
+
+WITH BikeFrames_CTE AS(
+	Select p.*
+	FROM Production.ProductSubcategory psc ON p.ProductSubcategoryID= psc.ProductCategoryID
+	Where psc.Name LIKE '%frame%'
+)
+Select * From BikeFrames_CTE;
+
+Part 2 
+Using WideWorldImporters database create a common table expression that returns two columns, 
+ItemName and TotalSales. The query inside the CTE will return the StockItemName from the table StockItems
+in the Warehouse schema and the total sales (Quantity times UnitPrice) for each item from the table InvoiceLines in the Sales schema.
+Review the tables to determine the joins for the tables. 
+Write a query that returns all rows from the CTE where the total sales is at least 1000 dollars. 
+Take a screen shot of the SQL windows and results and paste it in here.
+
+Use WideWorldIdImporters
+GO
+WITH ItemSales_CTE AS(
+	Select si.StockItemName AS ItemName,(ABS(st.Quantity)* si.UnitPrice) AS TotalSales
+	FROM Warehouse.StockItems AS si
+	JOIN Sales.InvoicesLine as i ON i.InvoiceID= si.InvoiceID
+	JOIN Warehouse.StockItemTransactions AS st ON st.StockItemID = i.StockItemID
+)
+
+Select * FROM ItemSales_CTE
+Where TotalSales < 1000
+ORDER BY TotalSales DESC
+
+----------------------------------------------------------------------------------------------------
+
+Week7 Lab22
+Part 1 
+Using WideWorldImporters and the Sales schema you will write a query that selects all rows
+from a derived table and aggregates the quantity by year for particular category names.
+The derived table will return rows containing CustomerCategoryName from the table CustomerCategories, 
+the Year part of the OrderDate from the table Orders and Quantity from the table OrderLines. 
+Review the table structures for the joins of the tables. Display the data for the categories Gift Store,
+Computer Store and Novelty Shop only. Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM
+(
+	Select cc.CustomerCategoryName, YEAR(OrderDate) AS OrderYear, ol.Quantity
+	FROM Sales.Customers c
+	JOIN Sales.Customers cc ON c.CustomerCategoryID= cc.CustomerCategoryID
+	JOIN Sales.Orders o ON c.CustomerID = o.CustomerID
+	JOIN Sales.OrderLines ol ON o.OrderID = ol.OrderID
+) src
+PIVOT
+(
+	SUM(Quantity)
+	FOR CustomerCategoryName IN ([Gift Store], [Computer Store], [Novelty Shop])
+)pvt;
+
+Part 2 
+Using WideWorldImporters database and the Sales schema write query that returns
+the CustomerID from the Customers table, the OrderID from the Orders table,
+and the total of all orders (UnitPrice times Quantity) from the OrderLines table.
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select c.CustomerID, o.OrderID, SUM(ol.UnitPrice * ol.Quantity) AS OrderTotal
+FROM Sales.Customers c
+JOIN Sales.Orders o ON c.CustomerID = o.CustomerID
+JOIN Sales.OrderLines ol ON o.OrderID = ol.OrderID
+GROUP BY c.CustomerID, o.OrderID;
+
+Part 3 
+Rewrite the query in Part 2, returning the CustomerName and OrderDate instead of the CustomerID and OrderID, 
+the sales total for each order, and the total of all orders for the CustomerName, OrderDate, and order total.
+Do not use Group By. Take a screen shot of the SQL windows and results and paste it here..
+
+USE WideWorldImporters
+GO
+
+Select c.CustomerName, o.OrderDate,
+	ol.UnitPrice* ol.Quantity AS OrderTotal,
+	SUM(ol.UnitPrice* ol.Quantity) OVER (Partition by c.CustomerName) AS CustomerTotal,
+	SUM(ol.UnitPrice* ol.Quantity) OVER (Partition by o.OrderDate) AS OrderTotal
+	SUM(ol.UnitPrice* ol.Quantity) OVER () AS GrandTotal
+FROM Sales.Customers AS c
+JOIN Sales.Orders AS o ON c.CustomerID = o.CustomerID
+JOIN Sales.OrderLines AS ol ON o.OrderID = ol.OrderID
+---------------------------------------------------------------------------------------------------------------
+
+Week8 Lab24 Writing Queries Against Temporal Data 
+
+Part 1 
+Using WideWorldImporters and the Warehouse schema add the following values to the Colors table for the columns
+ColorName and LastEditedBy: Dark Gray, 1; Scarlet, 1; Light Gray, 1; Almond, 1; Nyanza, 1. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+USE WideWorldImporters
+GO
+
+INSERT Warehouse.Colors(ColorName, LastEditedBy)
+		Values('Dark Gray', 1),
+		      ('Scarlet', 1),
+		      ('Light Gray', 1),
+		      ('Almond', 1),
+		      ('Nyanza', 1);
+
+Part 2 
+Write a query to select all rows from the table Colors that were added in Part 1. 
+Take a screen shot of the SQL windows and results and paste it here
+
+Select * FROM Warehouse.Colors
+Where ColorID > 36;
+
+
+Part 3 
+Write a query to select all rows from the temporal table for Colors. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+DECLARE @yesterday datetime2
+SET @yesterday= DATEADD(d, -1, SYSUTCDATETIME())
+
+Select * FROM Warehouse.Colors
+FOR SYSTEM_TIME AS OF @yesterday;
+
+Part 4 
+Change the values of LastEditedBy for the rows added in Part 1 to a 9. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+UPDATE Warehouse.Colors
+SET LastEditedBy = 9
+Where ColorID > 36;
+
+Part 5 
+Write a query to select all rows from the temporal table for Colors. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+DECLARE @yesterday datetime2
+SET @yesterday= DATEADD(d, 1, SYSUTCDATETIME())
+
+Select * FROM Warehouse.Colors
+FOR SYSTEM_TIME AS OF @yesterday;
+-------------------------------------------------------------------------------
+
+Lab25 Write queries against xml and json Data
+
+Part 1 
+Using the WideWorldImporters database and the Warehouse schema write a query 
+that returns the result set transformed to XML data. 
+The query will return StockItemID, StockItemName, Brand, Size, TaxRate, UnitPrice, 
+ValidFrom and ValidTo from the table StockItems. 
+The XML file will have the following structure: root name will be InventoryInfo, 
+the path name will be Product. StockItemId will be an attribute of the path name. 
+StockItemName and UnitPrice will be elements of the path name. 
+Brand and Size will be attributes of an element named Descriptioin in the path name. 
+TaxRate will be an attribute of an element named TaxInfo in the path name. 
+ValidFrom and ValidTo will be child elements of an element named ValidDates in the path name. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Use WideWorldImporters
+GO
+Select StockItemID AS "Product/@StockItemID",
+        StockItemName,
+	Brand AS "Description/@Brand",
+	Size AS "Description/@Size",
+	TaxRate AS "ValidDates/@ValidFrom",
+	UnitPrice,
+	ValidFrom AS "ValidDates/VaildFrom",
+	ValidTo AS "ValidDates/@ValidTo"
+FROM Warehouse.StockItems
+FOR XML PATH ('Product'), Root('InventoryInfo');
+
+Part 2 
+Double click on the resulting XML column from the above query to fully display the XML structure. 
+Take a screen shot of the SQL windows and results and paste it here
+
+     Picture
+
+Part 3 
+Using the WideWorldImporters database and the Warehouse schema write a query that returns the 
+result set transformed to JSON data. The query will return StockItemID, StockItemName, Brand, 
+Size, TaxRate, UnitPrice, ValidFrom and ValidTo from the table StockItems. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Use WideWorldImporters
+GO
+Select StockItemID,
+	Brand, Size, TaxRate,UnitPrice,
+	ValidFrom, ValidTo
+FROM Warehouse.StockItems
+FOR JSON PATH;
+
+Part 4 
+Using the WideWorldImporters database and the Warehouse schema write a query that returns 
+the StockItemName, Brand, Size, and CountryOfManufacture from the JSON column CustomFields 
+from the table StockItems. Only return rows where the CountryOfManufacture is not USA..
+Take a screen shot of the SQL windows and results and paste it here
+
+Select StockItemName, Brand, Size,
+	JSON_VALUE(CustomFields,'$.CountryOfManufacture') AS Country
+FROM Warehouse.StockItems
+Where JSON_VALUE(CustomFields, '$.CountryOfManufacture') NOT LIKE 'USA';
+
+--------------------------------------------------------------------------------------------
+
+Week 9 Lab 27 Creating Views
+
+Part 1 
+Using the AdventureWorks database and the Production schema create a view that returns 
+Name from the Products table, Name from the ProductCategory table, 
+Name from the ProductSubCategory table, and Quantity from the ProductInventory table. 
+Use appropriate aliases for the columns. Inspect the tables to determine the join conditions. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Create View Production.vProductsAssigment
+As
+    Select P.Name as Product_Name, PC.Name as Production_Cat_name, PS.Name as Product_Sub_Name, PIn.Quantity
+    FROM Production.Product as P
+    Inner Join ProductionSubcategory as PS ON P.ProductSubcategoryID = PS.ProductSubcategoryID 
+    Inner Join ProductionCategory as PC ON PC.ProductCategoryID = PC.ProductCategoryID 
+    Inner Join Production.ProductInventory as PIn ON P.ProductID = PIN.ProductID;
+
+Part 2 
+Write a query to select rows from the above view returning only rows where the name in the ProductSubCategory 
+table contains ‘bikes’. Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM Production.vProductsAssigment
+Where Product_Sub_Name like '%bikes';
+
+
+Part 3 
+Alter the view created in Part 1 to include the ListPrice from the Products table and only returns rows with 
+a ListPrice greater than 2000 dollars. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+
+ Alter View Production.vProductsAssigment
+ As
+    Select P.Name as Product_Name, PC.Name as Production_Cat_name, PS.Name as Product_Sub_Name, PIn.Quantity
+    FROM Production.Product as P
+    Inner Join ProductionSubcategory as PS ON P.ProductSubcategoryID = PS.ProductSubcategoryID 
+    Inner Join ProductionCategory as PC ON PC.ProductCategoryID = PC.ProductCategoryID 
+    Inner Join Production.ProductInventory as PIn ON P.ProductID = PIN.ProductID;
+    Where P.ListPrice > 2000
+    GO
+
+Part 4 
+Write a query to select rows from the above view returning only rows where the ListPrice is greater than 2000 
+but less than 3000 dollars. Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM Production.vProductAssigment
+Where ListPrice > 2000 AND ListPrice < 3000;
+
+-------------------------------------------------------------------------------------------------------------
+
+Lab 28 Creating User-defined Functions
+
+Part 1 
+Using the WideWorldDistributors database and the Sales schema create a function that takes InvoiceID
+as an input parameter and returns all the rows from the table InvoiceLines for the InvoiceID 
+value passed into the function. If the result is a NULL return a zero. 
+Take a screen shot of the SQL windows and results and paste it here
+
+
+CREATE FUNCTION Sales.GetInvoiceLinesID(@InvoiceID int)
+RETURNS int
+AS
+BEGIN
+     Declare @return int;
+     Select @return= COUNT(*)
+     FROM Sales.Invoices
+     Where InvoiceID = @InvoiceID
+     set @return = ISNULL(@return,0)
+     Return @return;
+END;
+
+
+Part 2 
+Using the WideWorldDistributors database and the Sales schema write a query that returns InvoiceID, 
+InvoiceDate and CustomerPurchaseOrderNumber from the table Invoices and the result of the above created function. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select InvoiceID, InvoiceDate, CustomerPurchaseOrderNumber, Sales.GetInvoiceLinesID(InvoiceID) as LineID
+From Sales.Invoices
+
+
+Part 3 
+Using the AdventureWorks database and the Production schema create a function that takes ProductId 
+as an input parameter and returns the results of a query that retrieves ProductID, Name, Color, Weight, 
+and DaysToManufacgture from the table Product. 
+Take a screen shot of the SQL windows and results and paste it here
+
+Create Function Production.ProductManuInfo1(@ProductID int)
+Reurns Table
+As
+Return
+(	
+	Select ProductID, Name, Color, Weight, DayToManufacture
+	From Production.Product
+	Where ProductID= @ProductID
+);
+GO
+
+Part 4 
+Using the AdventureWorks database and the Production schema write a query that returns the 
+results of the function in Part 3 for ProductID 320. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM Production.ProductManuInfo1(320);
+GO
+
+Part 5 
+Using the AdventureWorks database and the Production schema write a query that returns the results 
+of the function in Part 3 for ProductID 15. 
+Take a screen shot of the SQL windows and results and paste it here
+
+Select * FROM Production.ProductManuInfo1(15);
+GO
+
+---------------------------------------------------------------------------------------------------
+
+Lab 29 Creating stored Procedures
+
+Part 1 
+Using the AdventureWorks database and the Production schema create a stored procedure that returns 
+Name from the Product table, Name from the ProductCategory table, Name from the ProductSubCategory table, 
+and Quantity from the ProductInventory table. Use appropriate aliases for the columns. 
+Inspect the tables to determine the join conditions. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+CREATE PROCEDURE Production.GetProducts
+as
+Select P.Name as Product_Name, PCate.Name as Production_Cate_Name, PSub.Name as Product_sub_Name, PIn.Quantity
+From Production.Product as P
+Inner Join Production.ProducSubcategory as PSub ON P.ProductSubcategoryID = PSub.ProductSubcategoryID
+Inner JOIN Production.ProductCategory as PCate ON PCate.ProductCategoryID= PCate.ProductCategoryID
+Inner JOIN Production.ProductInventory as PIn On P.ProductID = PIn.ProductID;
+GO
+
+Part 2 
+Execute the above stored procedure. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+EXEC Production.GetProducts;
+GO
+
+Part 3 
+Alter the stored procedure created in Part 1 to include the ListPrice from the Product 
+table and only returns rows with a ListPrice greater than 2000 dollars. 
+Take a screen shot of the SQL windows and results and paste it here
+
+Alter PROCEDURE Production.GetProducts
+as
+Select P.Name as Product_Name, PCate.Name as Production_Cate_Name, PSub.Name as Product_sub_Name, PIn.Quantity,
+P.ListPrice
+From Production.Product as P
+Inner Join Production.ProducSubcategory as PSub ON P.ProductSubcategoryID = PSub.ProductSubcategoryID
+Inner JOIN Production.ProductCategory as PCate ON PCate.ProductCategoryID= PCate.ProductCategoryID
+Inner JOIN Production.ProductInventory as PIn On P.ProductID = PIn.ProductID;
+Where ListPrice > 2000;
+GO
+
+Part 4 
+Execute the above store procedure. 
+Take a screen shot of the SQL windows and results and paste it here
+
+EXEC Production.GetProducts;
+GO
+
+------------------------------------------------------------------------------------------------------------------
+
+Week 10 Lab 31 Implementing Transactions and Error Handling
+
+Part 1 
+This lab will test your knowledge of transactions and error handling. 
+Using the WideWorldImporters database and the Warehouse schema, perform the following tasks: 
+Truncate the data in table Transactions. 
+Examine the columns in Transactions. 
+Write a transaction to insert five rows into the Transactions table. 
+One insert statement must have a NULL value in TheData and one must be a duplicate of a 
+value previously inserted into TheID. If all inserts are successful Commit the transaction. 
+If not, Rollback the transaction and display the ERROR_NUMBER and ERROR_MESSAGE. 
+Execute the transaction block. Take a screen shot of the SQL windows and results and paste it here
+
+Use WideWorldImporters
+GO
+Create Table Warehouse.Transactions(
+	TheID int NOT NULL Primary key,
+	TheData nvachar(30) NOT NULL);
+
+BEGIN TRANSACTION
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(1, 'Carlos');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(2, 'Fernando');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(3, Null);
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(4, 'Omar');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(5, 'Ariana');
+Rollback;
+
+Part 1A 
+Select the data from the Transactions table. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM Warehouse.Transactions;
+
+Part 2 
+Change the Insert statements in the transaction block by fixing the data 
+that was causing the error. Execute the transaction block. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Create Table Warehouse.Transactions(
+	TheID int NOT NULL Primary key,
+	TheData nvachar(30) NOT NULL);
+
+BEGIN TRANSACTION
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(1, 'Carlos');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(2, 'Fernando');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(3, 'Taylor');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(4, 'Omar');
+	Insert Into Warehouse.Transactions(TheID, TheData) Values(5, 'Ariana');
+Commit;
+
+Part 2A 
+Select the data from the Transactions table. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select * FROM Warehouse.Transactions;
+
+Lab 32 working with data types and handle NULL Values
+
+Part 1 
+Write a single query to show the results of the following attempts to cast data: 
+Casting a date literal to an int data type will display Fail 
+Casting a date literal to a date data type will display Success 
+Casting a date literal to int data type will display No if it fails and Yes if it succeeds 
+Casting a date literal to date data type will display No if it fails and Yes if it succeeds 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select
+	TRY_CAST('12/12/2021' AS int) AS Fail,
+	TRY_CAST('12/12/2021' AS datetime2) AS Success,
+	CASE WHEN TRY_CAST ('12/12/2021' AS int) IS NULL
+	    THEN 'NO'
+	    ELSE 'YES'
+        END AS Case1,
+	CASE WHEN TRY_CAST ('12/12/2021' AS datetime2) IS NULL
+	    THEN 'NO'
+            ELSE 'YES'
+        END AS Case2
+
+Part 2 
+Rewrite the query from Part 1 but attempt to parse the data this time instead of cast. 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select
+	TRY_PARSE('12/12/2021' AS int) AS Fail,
+	TRY_PARSE('12/12/2021' AS datetime2) AS Success,
+	CASE WHEN TRY_CAST ('12/12/2021' AS int) IS NULL
+	    THEN 'NO'
+	    ELSE 'YES'
+        END AS Case1,
+	CASE WHEN TRY_PARSE ('12/12/2021' AS datetime2) IS NULL
+	    THEN 'NO'
+            ELSE 'YES'
+        END AS Case2
+
+
+Part 3 
+Using the WideWorldImporters database and the Application schema return the FullName, PhoneNumber, 
+and CustomFields from the table People. Only return rows where the CustomFields value contains a NULL. 
+Do not display NULL but the value ‘NONE’ 
+Take a screen shot of the SQL windows and results and paste it here.
+
+Select FullName, PhoneNumber, ISNULL(CustomFields, 'NONE') AS CustomFields
+FROM Application.People
+Where CustomFields IS NULL;
+
+Part 4 
+Assume a select statement is returning fields and the rows may have nulls. 
+Assuming the following values (NULL, NULL, NULL, ‘This data is okay’) 
+write the query that will insure the value ‘This data is okay’ is the only value returned. 
+Take a screen shot of the SQL windows and results and paste it here
+
+Select COALESCE(NULL, NULL, NULL, 'This Data is Okay') AS OkayData
+
+
+
 
